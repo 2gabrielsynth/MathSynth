@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campos Vetoriais - Visualização Interativa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/vector_fields.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="terminal-effect"></div>
+    
+    <div class="container">
+        <header>
+            <h1 class="glitch"><i class="fas fa-arrows-alt"></i> CAMPOS VETORIAIS</h1>
+            <p class="subtitle">Visualização interativa de fluxos, gradientes e rotacionais</p>
+        </header>
+
+        <main>
+            <div class="main-grid">
+                <!-- Visualização do Campo Vetorial -->
+                <div class="visualization-section" data-label="FIELD_VISUALIZATION">
+                    <div class="visualization-header">
+                        <h2><i class="fas fa-map"></i> Campo Vetorial</h2>
+                        <div class="visualization-controls">
+                            <button id="toggleGridBtn" class="btn btn-small">
+                                <i class="fas fa-th"></i> Grade
+                            </button>
+                            <button id="toggleParticlesBtn" class="btn btn-small">
+                                <i class="fas fa-circle"></i> Partículas
+                            </button>
+                            <button id="clearParticlesBtn" class="btn btn-small">
+                                <i class="fas fa-trash"></i> Limpar Partículas
+                            </button>
+                        </div>
+                    </div>
+                    <div class="visualization-container">
+                        <canvas id="vectorFieldCanvas"></canvas>
+                        <div class="visualization-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Escala:</span>
+                                <span id="scaleValue" class="stat-value">1.0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Partículas:</span>
+                                <span id="particleCount" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Velocidade:</span>
+                                <span id="speedValue" class="stat-value">1.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="particle-controls" data-label="PARTICLE_CONTROLS">
+                        <h3><i class="fas fa-sliders-h"></i> Controles de Partículas</h3>
+                        <div class="particle-params">
+                            <div class="param-slider">
+                                <label for="particleCountSlider">
+                                    <i class="fas fa-braille"></i> Número:
+                                </label>
+                                <input type="range" id="particleCountSlider" min="0" max="100" value="20">
+                                <span id="particleCountDisplay">20</span>
+                            </div>
+                            
+                            <div class="param-slider">
+                                <label for="particleSizeSlider">
+                                    <i class="fas fa-expand-arrows-alt"></i> Tamanho:
+                                </label>
+                                <input type="range" id="particleSizeSlider" min="1" max="10" value="3">
+                                <span id="particleSizeDisplay">3</span>
+                            </div>
+                            
+                            <div class="param-slider">
+                                <label for="particleLifeSlider">
+                                    <i class="fas fa-hourglass-half"></i> Vida:
+                                </label>
+                                <input type="range" id="particleLifeSlider" min="10" max="1000" value="300">
+                                <span id="particleLifeDisplay">300</span>
+                            </div>
+                            
+                            <div class="param-slider">
+                                <label for="particleSpeedSlider">
+                                    <i class="fas fa-tachometer-alt"></i> Velocidade:
+                                </label>
+                                <input type="range" id="particleSpeedSlider" min="0.1" max="5" step="0.1" value="1.0">
+                                <span id="particleSpeedDisplay">1.0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controles e Tipos de Campo -->
+                <div class="control-section" data-label="CONTROL_PANEL">
+                    <div class="field-selector">
+                        <h2><i class="fas fa-cogs"></i> Seletor de Campo</h2>
+                        <div class="field-buttons">
+                            <button id="uniformBtn" class="btn-field active" data-field="uniform">
+                                <i class="fas fa-arrows-alt-h"></i> Uniforme
+                                <span class="field-desc">Campo constante</span>
+                            </button>
+                            <button id="radialBtn" class="btn-field" data-field="radial">
+                                <i class="fas fa-bullseye"></i> Radial
+                                <span class="field-desc">Centro para fora</span>
+                            </button>
+                            <button id="vortexBtn" class="btn-field" data-field="vortex">
+                                <i class="fas fa-sync-alt"></i> Vórtice
+                                <span class="field-desc">Rotação circular</span>
+                            </button>
+                            <button id="sinkBtn" class="btn-field" data-field="sink">
+                                <i class="fas fa-tint"></i> Sumidouro
+                                <span class="field-desc">Convergente</span>
+                            </button>
+                            <button id="sourceBtn" class="btn-field" data-field="source">
+                                <i class="fas fa-expand"></i> Fonte
+                                <span class="field-desc">Divergente</span>
+                            </button>
+                            <button id="shearBtn" class="btn-field" data-field="shear">
+                                <i class="fas fa-wind"></i> Cisalhamento
+                                <span class="field-desc">Camadas deslizantes</span>
+                            </button>
+                            <button id="gradientBtn" class="btn-field" data-field="gradient">
+                                <i class="fas fa-chart-line"></i> Gradiente
+                                <span class="field-desc">Derivada direcional</span>
+                            </button>
+                            <button id="customBtn" class="btn-field" data-field="custom">
+                                <i class="fas fa-edit"></i> Personalizado
+                                <span class="field-desc">Função definida</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="field-params">
+                        <h3><i class="fas fa-sliders-h"></i> Parâmetros do Campo</h3>
+                        
+                        <div class="param-group" id="intensityGroup">
+                            <label for="fieldIntensity">
+                                <i class="fas fa-bolt"></i> Intensidade:
+                            </label>
+                            <input type="range" id="fieldIntensity" min="0.1" max="5" step="0.1" value="1.0">
+                            <span id="intensityValue">1.0</span>
+                        </div>
+                        
+                        <div class="param-group" id="angleGroup">
+                            <label for="fieldAngle">
+                                <i class="fas fa-compass"></i> Ângulo (graus):
+                            </label>
+                            <input type="range" id="fieldAngle" min="0" max="360" value="45">
+                            <span id="angleValue">45°</span>
+                        </div>
+                        
+                        <div class="param-group" id="customFieldGroup" style="display: none;">
+                            <label for="customFieldExpr">
+                                <i class="fas fa-code"></i> Função Vetorial:
+                            </label>
+                            <div class="function-inputs">
+                                <div class="function-component">
+                                    <span>F<sub>x</sub>(x,y) = </span>
+                                    <input type="text" id="customFieldX" placeholder="y" value="y">
+                                </div>
+                                <div class="function-component">
+                                    <span>F<sub>y</sub>(x,y) = </span>
+                                    <input type="text" id="customFieldY" placeholder="-x" value="-x">
+                                </div>
+                            </div>
+                            <div class="function-hint">
+                                <i class="fas fa-info-circle"></i> Use x, y como variáveis. Ex: sin(x), cos(y), x*y
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="visualization-controls">
+                        <h3><i class="fas fa-eye"></i> Visualização</h3>
+                        
+                        <div class="visualization-options">
+                            <div class="option-group">
+                                <label>
+                                    <input type="checkbox" id="showVectors" checked>
+                                    <i class="fas fa-arrows-alt"></i> Vetores
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="showStreamlines">
+                                    <i class="fas fa-stream"></i> Linhas de Fluxo
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="showDivergence">
+                                    <i class="fas fa-expand-arrows-alt"></i> Divergência
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="showCurl">
+                                    <i class="fas fa-sync-alt"></i> Rotacional
+                                </label>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label>
+                                    <input type="checkbox" id="colorByMagnitude" checked>
+                                    <i class="fas fa-palette"></i> Cor por Magnitude
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="colorByDirection">
+                                    <i class="fas fa-compass"></i> Cor por Direção
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="animateField" checked>
+                                    <i class="fas fa-play"></i> Animar
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="color-scheme">
+                            <label for="colorScheme">
+                                <i class="fas fa-fill-drip"></i> Esquema de Cores:
+                            </label>
+                            <select id="colorScheme">
+                                <option value="rainbow">Arco-íris</option>
+                                <option value="heat">Calor</option>
+                                <option value="cool">Frio</option>
+                                <option value="viridis">Viridis</option>
+                                <option value="plasma">Plasma</option>
+                                <option value="hacker">Hacker</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="execution-controls">
+                        <h3><i class="fas fa-play-circle"></i> Execução</h3>
+                        <div class="execution-buttons">
+                            <button id="startBtn" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Iniciar
+                            </button>
+                            <button id="pauseBtn" class="btn btn-warning">
+                                <i class="fas fa-pause"></i> Pausar
+                            </button>
+                            <button id="resetBtn" class="btn btn-secondary">
+                                <i class="fas fa-undo"></i> Resetar
+                            </button>
+                            <button id="exportBtn" class="btn btn-info">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Painel de Análise e Informações -->
+                <div class="analysis-section" data-label="ANALYSIS_PANEL">
+                    <div class="analysis-panel">
+                        <h2><i class="fas fa-chart-bar"></i> Análise do Campo</h2>
+                        
+                        <div class="field-properties">
+                            <div class="properties-grid">
+                                <div class="property-card">
+                                    <div class="property-icon">
+                                        <i class="fas fa-ruler"></i>
+                                    </div>
+                                    <div class="property-content">
+                                        <span class="property-title">Magnitude Média</span>
+                                        <span id="avgMagnitude" class="property-value">0.00</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="property-card">
+                                    <div class="property-icon">
+                                        <i class="fas fa-expand-arrows-alt"></i>
+                                    </div>
+                                    <div class="property-content">
+                                        <span class="property-title">Divergência</span>
+                                        <span id="divergence" class="property-value">0.00</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="property-card">
+                                    <div class="property-icon">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </div>
+                                    <div class="property-content">
+                                        <span class="property-title">Rotacional</span>
+                                        <span id="curl" class="property-value">0.00</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="property-card">
+                                    <div class="property-icon">
+                                        <i class="fas fa-water"></i>
+                                    </div>
+                                    <div class="property-content">
+                                        <span class="property-title">Fluxo</span>
+                                        <span id="flux" class="property-value">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="coordinate-display">
+                            <h3><i class="fas fa-crosshairs"></i> Coordenadas</h3>
+                            <div class="coordinate-readout">
+                                <div class="coordinate-item">
+                                    <span class="coord-label">Posição:</span>
+                                    <span id="positionCoords" class="coord-value">(0.00, 0.00)</span>
+                                </div>
+                                <div class="coordinate-item">
+                                    <span class="coord-label">Vetor:</span>
+                                    <span id="vectorValue" class="coord-value">(0.00, 0.00)</span>
+                                </div>
+                                <div class="coordinate-item">
+                                    <span class="coord-label">Magnitude:</span>
+                                    <span id="vectorMagnitude" class="coord-value">0.00</span>
+                                </div>
+                                <div class="coordinate-item">
+                                    <span class="coord-label">Direção:</span>
+                                    <span id="vectorDirection" class="coord-value">0.00°</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="field-equations">
+                            <h3><i class="fas fa-calculator"></i> Equações</h3>
+                            <div id="fieldEquation" class="equation-display">
+                                <p>F(x,y) = (0, 0)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-panel" data-label="FIELD_INFO">
+                        <h3><i class="fas fa-info-circle"></i> Informações do Campo</h3>
+                        <div id="fieldDescription" class="info-content">
+                            <p>Selecione um tipo de campo para ver suas informações.</p>
+                        </div>
+                        
+                        <div class="applications-list">
+                            <h4><i class="fas fa-rocket"></i> Aplicações</h4>
+                            <ul>
+                                <li><i class="fas fa-wind"></i> Dinâmica de Fluidos</li>
+                                <li><i class="fas fa-bolt"></i> Eletromagnetismo</li>
+                                <li><i class="fas fa-globe"></i> Meteorologia</li>
+                                <li><i class="fas fa-atom"></i> Mecânica Quântica</li>
+                                <li><i class="fas fa-brain"></i> Processamento de Imagens</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel de Exemplos e Teoria -->
+            <div class="theory-panel">
+                <div class="theory-box" data-label="UNIFORM_FIELD">
+                    <h3><i class="fas fa-arrows-alt-h"></i> Campo Uniforme</h3>
+                    <p>F(x,y) = (a, b) onde a e b são constantes.</p>
+                    <div class="equation">∇·F = 0, ∇×F = 0</div>
+                    <p>Exemplo: Campo elétrico uniforme, gravidade próximo à superfície.</p>
+                </div>
+                
+                <div class="theory-box" data-label="RADIAL_FIELD">
+                    <h3><i class="fas fa-bullseye"></i> Campo Radial</h3>
+                    <p>F(x,y) = (x, y) ou F = r̂</p>
+                    <div class="equation">∇·F = 2, ∇×F = 0</div>
+                    <p>Exemplo: Campo elétrico de carga pontual, fonte isotrópica.</p>
+                </div>
+                
+                <div class="theory-box" data-label="VORTEX_FIELD">
+                    <h3><i class="fas fa-sync-alt"></i> Campo de Vórtice</h3>
+                    <p>F(x,y) = (-y, x)</p>
+                    <div class="equation">∇·F = 0, ∇×F = 2</div>
+                    <p>Exemplo: Escoamento rotacional, campo magnético de fio reto.</p>
+                </div>
+                
+                <div class="theory-box" data-label="GRADIENT_FIELD">
+                    <h3><i class="fas fa-chart-line"></i> Campo Gradiente</h3>
+                    <p>F = ∇φ onde φ é uma função escalar</p>
+                    <div class="equation">∇×F = 0 (irrotacional)</div>
+                    <p>Exemplo: Campo de forças conservativas, linhas equipotenciais.</p>
+                </div>
+            </div>
+            
+            <!-- Navegação -->
+            <div class="navigation-panel">
+                <a href="{{ url_for('graphs') }}" class="btn-nav">
+                    <i class="fas fa-project-diagram"></i> Algoritmos de Grafos
+                </a>
+                <a href="{{ url_for('gradient') }}" class="btn-nav">
+                    <i class="fas fa-chart-line"></i> Gradiente Descendente
+                </a>
+                <a href="{{ url_for('fourier') }}" class="btn-nav">
+                    <i class="fas fa-wave-square"></i> Fourier Transform
+                </a>
+                <button id="helpBtn" class="btn-nav">
+                    <i class="fas fa-question-circle"></i> Ajuda
+                </button>
+            </div>
+        </main>
+
+        <footer>
+            <p>Campos Vetoriais - Visualização Interativa | Teorema de Stokes, Divergência e Rotacional</p>
+            <p class="footer-note">Aplicação educacional para estudo de cálculo vetorial | Implementação em JavaScript com Canvas</p>
+        </footer>
+    </div>
+
+    <!-- Modal de Ajuda -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-question-circle"></i> Ajuda - Campos Vetoriais</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h3><i class="fas fa-mouse-pointer"></i> Interação</h3>
+                    <ul>
+                        <li><strong>Clique e Arraste:</strong> Adiciona partículas no campo</li>
+                        <li><strong>Clique em um ponto:</strong> Mostra o vetor naquela posição</li>
+                        <li><strong>Roda do Mouse:</strong> Ajusta o zoom</li>
+                        <li><strong>Arraste o canvas:</strong> Move a visualização</li>
+                    </ul>
+                </div>
+                
+                <div class="help-section">
+                    <h3><i class="fas fa-cogs"></i> Tipos de Campo</h3>
+                    <div class="field-help">
+                        <div class="field-item">
+                            <div class="field-icon"><i class="fas fa-arrows-alt-h"></i></div>
+                            <div class="field-info">
+                                <strong>Uniforme:</strong> Vetores constantes em direção e magnitude
+                            </div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-icon"><i class="fas fa-bullseye"></i></div>
+                            <div class="field-info">
+                                <strong>Radial:</strong> Vetores apontando para fora do centro
+                            </div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-icon"><i class="fas fa-sync-alt"></i></div>
+                            <div class="field-info">
+                                <strong>Vórtice:</strong> Vetores girando ao redor do centro
+                            </div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="field-info">
+                                <strong>Gradiente:</strong> Direção de maior crescimento de uma função
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <h3><i class="fas fa-palette"></i> Visualização</h3>
+                    <div class="legend-help">
+                        <div class="legend-item">
+                            <div class="color-box" style="background: linear-gradient(to right, #ff0000, #ffff00);"></div>
+                            <span>Magnitude do Vetor (mais quente = maior)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background: linear-gradient(to right, #0000ff, #ff00ff);"></div>
+                            <span>Direção do Vetor (hue = ângulo)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #00ff00;"></div>
+                            <span>Partículas seguindo o campo</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #ff0000;"></div>
+                            <span>Divergência positiva (fonte)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #0000ff;"></div>
+                            <span>Divergência negativa (sumidouro)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/vector_fields.js') }}"></script>
+    
+    <!-- Efeitos Hacker -->
+    <script>
+        // Adiciona efeito de terminal
+        function addTerminalEffect() {
+            const terminal = document.createElement('div');
+            terminal.className = 'terminal-output';
+            terminal.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 350px;
+                background: rgba(15, 25, 35, 0.8);
+                border: 1px solid #00cc00;
+                padding: 15px;
+                font-family: 'Courier New', monospace;
+                font-size: 12px;
+                color: #6A71D8;
+                z-index: 1000;
+                opacity: 0.8;
+                box-shadow: 0 0 15px rgba(0, 200, 0, 0.2);
+                max-height: 250px;
+                overflow-y: auto;
+                line-height: 1.4;
+                border-radius: 4px;
+                backdrop-filter: blur(5px);
+            `;
+            
+            document.body.appendChild(terminal);
+            
+            const messages = [
+                "INITIALIZING VECTOR FIELD VISUALIZER...",
+                "LOADING FIELD EQUATIONS...",
+                "CALIBRATING PARTICLE SYSTEM...",
+                "SYSTEM STATUS: ONLINE",
+                "READY FOR VECTOR FIELD ANALYSIS"
+            ];
+            
+            let messageIndex = 0;
+            let charIndex = 0;
+            let currentText = '';
+            
+            function typeMessage() {
+                if (messageIndex < messages.length) {
+                    if (charIndex < messages[messageIndex].length) {
+                        currentText += messages[messageIndex].charAt(charIndex);
+                        terminal.innerHTML = currentText + '<span style="color: #00ff00; animation: blink 1s infinite;">█</span>';
+                        charIndex++;
+                        setTimeout(typeMessage, 30);
+                    } else {
+                        currentText += '<br>';
+                        charIndex = 0;
+                        messageIndex++;
+                        setTimeout(typeMessage, 300);
+                    }
+                } else {
+                    setInterval(updateTerminalStats, 1000);
+                }
+            }
+            
+            typeMessage();
+        }
+        
+        function updateTerminalStats() {
+            const terminal = document.querySelector('.terminal-output');
+            if (!terminal) return;
+            
+            const particleCount = document.getElementById('particleCount')?.textContent || '0';
+            const avgMagnitude = document.getElementById('avgMagnitude')?.textContent || '0.00';
+            const fieldType = document.querySelector('.btn-field.active')?.dataset.field || 'uniform';
+            
+            const stats = [
+                `FIELD: ${fieldType.toUpperCase()}`,
+                `PARTICLES: ${particleCount}`,
+                `AVG_MAG: ${avgMagnitude}`,
+                `TIME: ${new Date().toLocaleTimeString()}`,
+                '>_'
+            ];
+            
+            terminal.innerHTML = stats.join('<br>');
+        }
+        
+        // Adiciona partículas de fluxo como fundo
+        function createFlowParticles() {
+            const container = document.createElement('div');
+            container.className = 'flow-particles';
+            container.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+                overflow: hidden;
+            `;
+            
+            
+            document.body.appendChild(container);
+            
+            // Cria partículas de fluxo
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'flow-particle';
+                particle.style.cssText = `
+                    position: absolute;
+                    width: ${Math.random() * 3 + 1}px;
+                    height: ${Math.random() * 3 + 1}px;
+                    background: rgba(100, 150, 255, ${Math.random() * 0.1 + 0.05}); // AZUL
+
+                    border-radius: 50%;
+                    box-shadow: 0 0 10px rgba(100, 200, 255, 0.3); // AZUL MAIS CLARO
+                    user-select: none;
+                `;
+                
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                container.appendChild(particle);
+                animateFlowParticle(particle);
+            }
+        }
+        
+        function animateFlowParticle(particle) {
+            let x = parseFloat(particle.style.left);
+            let y = parseFloat(particle.style.top);
+            const speedX = (Math.random() - 0.5) * 0.3;
+            const speedY = (Math.random() - 0.5) * 0.3;
+            
+            function flow() {
+                x += speedX;
+                y += speedY;
+                
+                // Volta para o outro lado quando sai da tela
+                if (x < -5) x = 105;
+                if (x > 105) x = -5;
+                if (y < -5) y = 105;
+                if (y > 105) y = -5;
+                
+                particle.style.left = `${x}vw`;
+                particle.style.top = `${y}vh`;
+                
+                // Efeito de pulsação sutil
+                const pulse = Math.sin(Date.now() * 0.001 + x) * 0.05 + 1;
+                particle.style.opacity = 0.05 + Math.abs(Math.sin(Date.now() * 0.002)) * 0.05;
+                
+                requestAnimationFrame(flow);
+            }
+            
+            flow();
+}
+        
+        // Modal de ajuda
+        function setupModal() {
+            const modal = document.getElementById('helpModal');
+            const helpBtn = document.getElementById('helpBtn');
+            const closeBtn = document.querySelector('.modal-close');
+            
+            if (helpBtn && modal && closeBtn) {
+                helpBtn.addEventListener('click', () => {
+                    modal.style.display = 'block';
+                });
+                
+                closeBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+                
+                window.addEventListener('click', (event) => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+        }
+        
+        // Efeito de glitch aleatório
+        function addGlitchEffects() {
+            setInterval(() => {
+                if (Math.random() > 0.98) { // 2% de chance de glitch
+                    const title = document.querySelector('h1');
+                    if (title) {
+                        title.classList.add('glitch-active');
+                        setTimeout(() => {
+                            title.classList.remove('glitch-active');
+                        }, 200);
+                    }
+                }
+            }, 8000);
+        }
+        
+        // Inicializa todos os efeitos
+        document.addEventListener('DOMContentLoaded', function() {
+            addTerminalEffect();
+            createFlowParticles();
+            setupModal();
+            addGlitchEffects();
+            
+            // Adiciona estilos CSS dinâmicos
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes blink {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.3; }
+                }
+                
+                .glitch-active {
+                    animation: glitch-effect 0.3s;
+                }
+                
+                @keyframes glitch-effect {
+                    0% { transform: translate(0); }
+                    20% { transform: translate(-2px, 2px); text-shadow: 1px 0 #ff00ff; }
+                    40% { transform: translate(2px, -2px); text-shadow: -1px 0 #00ffff; }
+                    60% { transform: translate(-1px, 1px); }
+                    80% { transform: translate(1px, -1px); }
+                    100% { transform: translate(0); }
+                }
+                
+                .flow-particle {
+                    transition: opacity 0.3s ease;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

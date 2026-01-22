@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graham Scan - Visualização Interativa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔷 ALGORITMO GRAHAM SCAN</h1>
+            <p class="subtitle">Visualização interativa do algoritmo de fecho convexo</p>
+        </header>
+
+        <main class="main-content">
+            <div class="visualization-section">
+                <div class="canvas-container">
+                    <canvas id="grahamCanvas"></canvas>
+                    <div class="canvas-info">
+                        <p><strong>Como usar:</strong> Clique para adicionar pontos • Arraste para mover • Clique com direito para remover</p>
+                    </div>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h2>📋 Passos do Algoritmo</h2>
+                    <ol id="stepList" class="step-list">
+                        <li data-step="0">Encontrar ponto pivô (menor Y)</li>
+                        <li data-step="1">Ordenar pontos por ângulo polar</li>
+                        <li data-step="2">Inicializar pilha com 2 primeiros pontos</li>
+                        <li data-step="3">Processar cada ponto ordenado</li>
+                        <li data-step="4">Verificar orientação (curva à direita?)</li>
+                        <li data-step="5">Remover pontos da pilha se necessário</li>
+                        <li data-step="6">Adicionar ponto à pilha</li>
+                        <li data-step="7">Repetir até processar todos pontos</li>
+                        <li data-step="8">Fecho convexo completo!</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="control-panel">
+                    <h2>🎮 Controles</h2>
+                    
+                    <div class="control-group">
+                        <h3>Execução</h3>
+                        <div class="button-grid">
+                            <button id="stepBtn" class="btn btn-primary">
+                                <span class="btn-icon">▶</span> Próximo Passo
+                            </button>
+                            <button id="runBtn" class="btn btn-success">
+                                <span class="btn-icon">▶▶</span> Executar Tudo
+                            </button>
+                            <button id="pauseBtn" class="btn btn-warning" disabled>
+                                <span class="btn-icon">⏸</span> Pausar
+                            </button>
+                            <button id="resetBtn" class="btn btn-secondary">
+                                <span class="btn-icon">↻</span> Reiniciar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>Pontos</h3>
+                        <div class="button-grid">
+                            <button id="clearBtn" class="btn btn-danger">
+                                <span class="btn-icon">🗑</span> Limpar Tudo
+                            </button>
+                            <button id="randomBtn" class="btn btn-info">
+                                <span class="btn-icon">🎲</span> Gerar Aleatório
+                            </button>
+                        </div>
+                        
+                        <div class="slider-control">
+                            <label for="pointCount">Número de pontos:</label>
+                            <input type="range" id="pointCount" min="5" max="50" value="15">
+                            <span id="pointCountValue" class="value-display">15</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>Configurações</h3>
+                        <div class="slider-control">
+                            <label for="speedSlider">Velocidade:</label>
+                            <input type="range" id="speedSlider" min="50" max="2000" value="500">
+                            <span id="speedValue" class="value-display">500ms</span>
+                        </div>
+                        
+                        <div class="checkbox-control">
+                            <label>
+                                <input type="checkbox" id="showAngles" checked>
+                                Mostrar ângulos polares
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showGrid" checked>
+                                Mostrar grade
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="stats-panel">
+                        <h3>📊 Estatísticas</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Pontos totais:</span>
+                                <span id="totalPoints" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Passo atual:</span>
+                                <span id="currentStep" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Pontos no fecho:</span>
+                                <span id="hullPoints" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Status:</span>
+                                <span id="status" class="stat-value">Pronto</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="legend">
+                        <h3>🎨 Legenda</h3>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #4cc9f0;"></div>
+                                <span>Ponto pivô</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #4361ee;"></div>
+                                <span>Pontos normais</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #f72585;"></div>
+                                <span>Ponto atual</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #4ade80;"></div>
+                                <span>Pilha ativa</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #ff9100;"></div>
+                                <span>Fecho convexo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Graham Scan - Algoritmo para encontrar o menor polígono convexo que contém um conjunto de pontos</p>
+            <p>Complexidade: O(n log n) | Criado para fins educacionais</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/grahamscan.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/visualization.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/controls.js') }}"></script>
+</body>
+</html>
