@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caixeiro Viajante - Visualização</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tsp.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-route"></i> Caixeiro Viajante - Visualização</h1>
+            <p class="subtitle">Resolva o famoso problema do Caixeiro Viajante (TSP) e visualize diferentes algoritmos de otimização</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="cityCount">Número de Cidades:</label>
+                    <input type="range" id="cityCount" min="3" max="10" value="5">
+                    <span id="cityCountValue">5</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="algorithmSelect">Algoritmo:</label>
+                    <select id="algorithmSelect">
+                        <option value="bruteforce">Força Bruta (exato)</option>
+                        <option value="nearest">Vizinho Mais Próximo</option>
+                        <option value="christofides">Christofides (aproximação)</option>
+                        <option value="simulated">Têmpera Simulada</option>
+                        <option value="genetic">Algoritmo Genético</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Velocidade da Animação:</label>
+                    <input type="range" id="speed" min="1" max="40" value="20">
+                    <span id="speedValue">Médio</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="mapType">Tipo de Mapa:</label>
+                    <select id="mapType">
+                        <option value="random">Aleatório</option>
+                        <option value="grid">Grade Regular</option>
+                        <option value="circle">Círculo</option>
+                        <option value="clustered">Agrupado</option>
+                    </select>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Nova Configuração
+                    </button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Executar Algoritmo
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                    <button id="optimalBtn" class="btn">
+                        <i class="fas fa-star"></i> Mostrar Solução Ótima
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> O Problema do Caixeiro Viajante</h3>
+                    <p>Encontrar o caminho mais curto que visita cada cidade exatamente uma vez e retorna à cidade inicial.</p>
+                    
+                    <p><strong>Formulação Matemática:</strong></p>
+                    <div style="text-align: center; margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <p style="font-family: 'Courier New', monospace; font-size: 1.1rem;">
+                            min ∑ d(i,j) × x(i,j)
+                        </p>
+                        <p style="font-size: 0.9rem; color: #a9a9a9; margin-top: 5px;">
+                            Sujeito a restrições de visita única
+                        </p>
+                    </div>
+                    
+                    <p><strong>Complexidade:</strong></p>
+                    <ul>
+                        <li><strong>NP-Difícil:</strong> Não existe solução eficiente conhecida</li>
+                        <li><strong>Fatorial:</strong> (n-1)! possíveis rotas para n cidades</li>
+                        <li><strong>Aproximação:</strong> Algoritmos heurísticos para soluções próximas do ótimo</li>
+                    </ul>
+                    
+                    <p><strong>Aplicações:</strong></p>
+                    <ul>
+                        <li>Logística e distribuição</li>
+                        <li>Planejamento de rotas</li>
+                        <li>Produção de circuitos integrados</li>
+                        <li>Sequenciamento de DNA</li>
+                    </ul>
+                </div>
+                
+                <div class="tsp-properties">
+                    <h4><i class="fas fa-check-circle"></i> Propriedades do TSP</h4>
+                    <ul>
+                        <li><strong>Completude:</strong> NP-Completo</li>
+                        <li><strong>Simetria:</strong> d(i,j) = d(j,i) na maioria dos casos</li>
+                        <li><strong>Desigualdade Triangular:</strong> d(i,k) ≤ d(i,j) + d(j,k)</li>
+                        <li><strong>Heurísticas:</strong> Boas soluções em tempo polinomial</li>
+                    </ul>
+                </div>
+                
+                <div class="complexity-info">
+                    <h4><i class="fas fa-chart-line"></i> Complexidade Computacional</h4>
+                    <div class="complexity-item">
+                        <span class="complexity-label">Força Bruta:</span>
+                        <span class="complexity-value">O(n!)</span>
+                    </div>
+                    <div class="complexity-item">
+                        <span class="complexity-label">Programação Dinâmica:</span>
+                        <span class="complexity-value">O(n²2ⁿ)</span>
+                    </div>
+                    <div class="complexity-item">
+                        <span class="complexity-label">Vizinho Mais Próximo:</span>
+                        <span class="complexity-value">O(n²)</span>
+                    </div>
+                    <div class="complexity-item">
+                        <span class="complexity-label">Christofides:</span>
+                        <span class="complexity-value">O(n³)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="visualization-area">
+                    <div class="map-visualization">
+                        <h3><i class="fas fa-map"></i> Mapa das Cidades</h3>
+                        <div class="map-container" id="mapContainer">
+                            <!-- Cidades e rotas serão desenhadas aqui -->
+                        </div>
+                        <div class="distance-matrix" id="distanceMatrix">
+                            <!-- Matriz de distâncias será gerada aqui -->
+                        </div>
+                    </div>
+                    
+                    <div class="algorithm-visualization">
+                        <h3><i class="fas fa-project-diagram"></i> Visualização do Algoritmo</h3>
+                        <div class="permutation-visualization" id="permutationVisualization">
+                            <!-- Permutações e caminhos serão mostrados aqui -->
+                        </div>
+                        <div class="optimization-progress" id="optimizationProgress">
+                            <!-- Barra de progresso para algoritmos heurísticos -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="current-operation">
+                    <h4><i class="fas fa-cogs"></i> Operação Atual</h4>
+                    <div class="operation-details" id="operationDetails">
+                        <p>Configure as cidades e escolha um algoritmo para começar.</p>
+                    </div>
+                    
+                    <div class="path-info">
+                        <div class="info-item">
+                            <span class="info-label">Cidade Atual:</span>
+                            <span id="currentCity" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Próxima Cidade:</span>
+                            <span id="nextCity" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Distância Parcial:</span>
+                            <span id="partialDistance" class="info-value">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Distância Total:</span>
+                            <span id="totalDistance" class="info-value">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Cidades Visitadas:</span>
+                        <span id="visitedCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Permutações Testadas:</span>
+                        <span id="permutationCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Tempo:</span>
+                        <span id="executionTime" class="status-value">0s</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Pronto</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-icon start-city"></div>
+                        <span>Cidade Inicial</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon current-city"></div>
+                        <span>Cidade Atual</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon visited-city"></div>
+                        <span>Cidade Visitada</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon normal-city"></div>
+                        <span>Cidade Não Visitada</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line current-route"></div>
+                        <span>Rota Atual</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line optimal-route"></div>
+                        <span>Rota Ótima</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line candidate-route"></div>
+                        <span>Rota Candidata</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/tsp.js') }}"></script>
+</body>
+</html>

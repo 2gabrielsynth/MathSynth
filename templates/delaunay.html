@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triangulação de Delaunay</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/delaunay.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔺 TRIANGULAÇÃO DE DELAUNAY</h1>
+            <p class="subtitle">Maximização dos ângulos mínimos e dualidade com Voronoi</p>
+        </header>
+
+        <main class="main-content">
+            <div class="visualization-section">
+                <div class="canvas-container">
+                    <canvas id="delaunayCanvas"></canvas>
+                    <div class="canvas-info">
+                        <p><strong>Como usar:</strong> Clique para adicionar pontos • Arraste para mover • Clique com direito para remover</p>
+                    </div>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h2>📋 Sobre Triangulação de Delaunay</h2>
+                    <div class="info-content">
+                        <p>Uma triangulação de Delaunay para um conjunto de pontos P no plano é uma triangulação DT(P) tal que nenhum ponto em P está dentro da circunferência circunscrita de qualquer triângulo em DT(P).</p>
+                        
+                        <h3>Propriedades Principais:</h3>
+                        <ul>
+                            <li><strong>Maximização do ângulo mínimo:</strong> Maximiza o menor ângulo de todos os triângulos</li>
+                            <li><strong>Propriedade do círculo vazio:</strong> Nenhum ponto dentro do círculo circunscrito</li>
+                            <li><strong>Dualidade com Voronoi:</strong> O dual geométrico do diagrama de Voronoi</li>
+                            <li><strong>Unicidade:</strong> Única quando não há 4 pontos cocirculares</li>
+                        </ul>
+                        
+                        <h3>Algoritmos Comuns:</h3>
+                        <ul>
+                            <li><strong>Incremental (Bowyer-Watson):</strong> O(n²) no pior caso, O(n log n) esperado</li>
+                            <li><strong>Divisão e Conquista:</strong> O(n log n) determinístico</li>
+                            <li><strong>Varredura (Fortune modificado):</strong> O(n log n)</li>
+                            <li><strong>Flip Algorithm:</strong> Baseado em flips de arestas</li>
+                        </ul>
+                        
+                        <h3>Aplicações:</h3>
+                        <ul>
+                            <li>🖥️ Computação gráfica e malhas</li>
+                            <li>🗺️ Sistemas de informação geográfica (GIS)</li>
+                            <li>🔬 Interpolação e análise espacial</li>
+                            <li>🎮 Geração procedural de terrenos</li>
+                            <li>📡 Redes de sensores sem fio</li>
+                        </ul>
+                        
+                        <div class="theorem">
+                            <h4>Teorema da Dualidade:</h4>
+                            <p>A triangulação de Delaunay é o dual geométrico do diagrama de Voronoi. Cada triângulo de Delaunay corresponde a um vértice de Voronoi (circuncentro).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="control-panel">
+                    <h2>🎮 Controles</h2>
+                    
+                    <div class="control-group">
+                        <h3>Pontos</h3>
+                        <div class="button-grid">
+                            <button id="addPointBtn" class="btn btn-primary">
+                                <span class="btn-icon">+</span> Adicionar Ponto
+                            </button>
+                            <button id="clearBtn" class="btn btn-danger">
+                                <span class="btn-icon">🗑</span> Limpar Tudo
+                            </button>
+                            <button id="randomBtn" class="btn btn-info">
+                                <span class="btn-icon">🎲</span> Aleatório
+                            </button>
+                            <button id="loadPresetBtn" class="btn btn-secondary">
+                                <span class="btn-icon">📁</span> Presets
+                            </button>
+                        </div>
+                        
+                        <div class="slider-control">
+                            <label for="pointCount">Número de pontos:</label>
+                            <input type="range" id="pointCount" min="3" max="100" value="20">
+                            <span id="pointCountValue" class="value-display">20</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>Visualização</h3>
+                        <div class="button-grid">
+                            <button id="toggleTrianglesBtn" class="btn btn-success active">
+                                <span class="btn-icon">🔺</span> Triângulos
+                            </button>
+                            <button id="toggleCircumcirclesBtn" class="btn btn-warning">
+                                <span class="btn-icon">⚫</span> Círculos
+                            </button>
+                            <button id="togglePointsBtn" class="btn btn-success active">
+                                <span class="btn-icon">•</span> Pontos
+                            </button>
+                            <button id="toggleVoronoiBtn" class="btn btn-info">
+                                <span class="btn-icon">📐</span> Voronoi
+                            </button>
+                            <button id="toggleConvexHullBtn" class="btn btn-secondary">
+                                <span class="btn-icon">⭕</span> Fecho Convexo
+                            </button>
+                            <button id="toggleAnglesBtn" class="btn btn-secondary">
+                                <span class="btn-icon">📐</span> Ângulos
+                            </button>
+                        </div>
+                        
+                        <div class="checkbox-control">
+                            <label>
+                                <input type="checkbox" id="showGrid" checked>
+                                Mostrar grade
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showIndexes">
+                                Mostrar índices
+                            </label>
+                            <label>
+                                <input type="checkbox" id="animateFlips">
+                                Animar flips
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>Algoritmo</h3>
+                        <div class="algorithm-selector">
+                            <label for="algorithmSelect">Selecionar algoritmo:</label>
+                            <select id="algorithmSelect">
+                                <option value="bowyerWatson">Bowyer-Watson (Incremental)</option>
+                                <option value="divideConquer">Divisão e Conquista</option>
+                                <option value="flipAlgorithm">Flip Algorithm</option>
+                                <option value="bruteForce">Força Bruta (demo)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="button-grid">
+                            <button id="stepBtn" class="btn btn-primary">
+                                <span class="btn-icon">▶</span> Passo a Passo
+                            </button>
+                            <button id="runBtn" class="btn btn-success">
+                                <span class="btn-icon">▶▶</span> Executar
+                            </button>
+                            <button id="pauseBtn" class="btn btn-warning" disabled>
+                                <span class="btn-icon">⏸</span> Pausar
+                            </button>
+                            <button id="resetBtn" class="btn btn-secondary">
+                                <span class="btn-icon">↻</span> Reiniciar
+                            </button>
+                        </div>
+                        
+                        <div class="slider-control">
+                            <label for="speedSlider">Velocidade animação:</label>
+                            <input type="range" id="speedSlider" min="1" max="100" value="30">
+                            <span id="speedValue" class="value-display">30</span>
+                        </div>
+                    </div>
+
+                    <div class="stats-panel">
+                        <h3>📊 Estatísticas</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Pontos:</span>
+                                <span id="totalPoints" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Triângulos:</span>
+                                <span id="totalTriangles" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Arestas:</span>
+                                <span id="totalEdges" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Flips:</span>
+                                <span id="totalFlips" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Ângulo mínimo:</span>
+                                <span id="minAngle" class="stat-value">0°</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Tempo:</span>
+                                <span id="calcTime" class="stat-value">0ms</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="legend">
+                        <h3>🎨 Legenda</h3>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #4361ee;"></div>
+                                <span>Pontos</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: rgba(74, 222, 128, 0.3);"></div>
+                                <span>Triângulos Delaunay</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #ff9100;"></div>
+                                <span>Triângulo ativo</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: rgba(76, 201, 240, 0.3); border: 2px dashed #4cc9f0;"></div>
+                                <span>Círculo circunscrito</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #f72585;"></div>
+                                <span>Fecho convexo</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: rgba(247, 37, 133, 0.2); border: 1px solid #f72585;"></div>
+                                <span>Diagrama de Voronoi</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="navigation">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                            <span class="btn-icon">←</span> Graham Scan
+                        </a>
+                        <a href="{{ url_for('voronoi') }}" class="btn btn-secondary">
+                            <span class="btn-icon">📐</span> Voronoi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Triangulação de Delaunay - Visualização interativa | Criado para fins educacionais</p>
+            <p>Dualidade com Voronoi | Algoritmo: Bowyer-Watson (O(n log n) esperado)</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/delaunay.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/delaunay-viz.js') }}"></script>
+</body>
+</html>

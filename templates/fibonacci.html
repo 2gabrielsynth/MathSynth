@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fibonacci - Visualização</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fibonacci.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-seedling"></i> Sequência de Fibonacci - Visualização</h1>
+            <p class="subtitle">Visualize a famosa sequência de Fibonacci, sua árvore de recursão e a proporção áurea</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="fibNumber">Número de Fibonacci (n):</label>
+                    <input type="number" id="fibNumber" min="0" max="15" value="6">
+                    <small style="color: #888; display: block; margin-top: 5px;">Máximo: 15 (para evitar travamento)</small>
+                </div>
+                
+                <div class="control-group">
+                    <label for="methodSelect">Método de Cálculo:</label>
+                    <select id="methodSelect">
+                        <option value="recursive">Recursivo (com memoização)</option>
+                        <option value="iterative">Iterativo (eficiente)</option>
+                        <option value="both">Ambos (Comparação)</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Velocidade da Animação:</label>
+                    <input type="range" id="speed" min="1" max="40" value="20">
+                    <span id="speedValue">Médio</span>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Aleatório
+                    </button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Calcular Fibonacci
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> A Sequência de Fibonacci</h3>
+                    <p>A sequência de Fibonacci é uma série de números onde cada número é a soma dos dois anteriores.</p>
+                    
+                    <p><strong>Definição Matemática:</strong></p>
+                    <div style="text-align: center; margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <p style="font-family: 'Courier New', monospace; font-size: 1.3rem;">
+                            F(0) = 0<br>
+                            F(1) = 1<br>
+                            F(n) = F(n-1) + F(n-2) para n ≥ 2
+                        </p>
+                    </div>
+                    
+                    <p><strong>Sequência:</strong></p>
+                    <p style="font-family: 'Courier New', monospace; text-align: center;">
+                        0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, ...
+                    </p>
+                    
+                    <p><strong>Aplicações:</strong></p>
+                    <ul>
+                        <li>Natureza: Arranjo de folhas, conchas, flores</li>
+                        <li>Arte e Arquitetura: Proporção áurea</li>
+                        <li>Finanças: Análise técnica de mercado</li>
+                        <li>Computação: Algoritmos, otimização</li>
+                    </ul>
+                </div>
+                
+                <div class="fibonacci-properties">
+                    <h4><i class="fas fa-check-circle"></i> Propriedades Matemáticas</h4>
+                    <ul>
+                        <li><strong>Proporção Áurea:</strong> F(n+1)/F(n) → φ ≈ 1.618</li>
+                        <li><strong>Exponencial:</strong> F(n) ≈ φⁿ / √5</li>
+                        <li><strong>Simetria:</strong> F(-n) = (-1)ⁿ⁺¹ F(n)</li>
+                        <li><strong>Identidades:</strong> F(n)² + F(n+1)² = F(2n+1)</li>
+                    </ul>
+                </div>
+                
+                <div class="golden-ratio">
+                    <h4><i class="fas fa-gem"></i> Proporção Áurea (φ)</h4>
+                    <div class="ratio-display">
+                        <div class="ratio-symbol">φ</div>
+                        <div class="ratio-value">≈ 1.6180339887</div>
+                    </div>
+                    <p style="text-align: center; margin-top: 10px; color: #a9a9a9;">
+                        φ = (1 + √5) / 2
+                    </p>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="visualization-area">
+                    <div class="sequence-visualization">
+                        <h3><i class="fas fa-sort-numeric-down"></i> Sequência de Fibonacci</h3>
+                        <div class="sequence-container" id="sequenceContainer">
+                            <!-- Números de Fibonacci serão inseridos aqui -->
+                        </div>
+                        <div class="spiral-container" id="spiralContainer">
+                            <!-- Espiral áurea será desenhada aqui -->
+                            <div class="spiral-message">
+                                <i class="fas fa-spinner"></i>
+                                <p>Espiral áurea aparecerá durante o cálculo</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recursion-visualization">
+                        <h3><i class="fas fa-project-diagram"></i> Árvore de Recursão</h3>
+                        <div class="tree-container" id="treeContainer">
+                            <div class="tree-vertical" id="treeVertical">
+                                <!-- Árvore de recursão será construída aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="current-operation">
+                    <h4><i class="fas fa-cogs"></i> Operação Atual</h4>
+                    <div class="operation-details" id="operationDetails">
+                        <p>Insira um número e clique em "Calcular Fibonacci" para começar.</p>
+                    </div>
+                    
+                    <div class="calculation-info">
+                        <div class="info-item">
+                            <span class="info-label">n:</span>
+                            <span id="currentN" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">F(n):</span>
+                            <span id="currentFib" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">F(n-1):</span>
+                            <span id="prevFib1" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">F(n-2):</span>
+                            <span id="prevFib2" class="info-value">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Chamadas:</span>
+                        <span id="callCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Cálculos:</span>
+                        <span id="calculationCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Tempo:</span>
+                        <span id="executionTime" class="status-value">0ms</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Pronto</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box calculating"></div>
+                        <span>Calculando</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box base-case"></div>
+                        <span>Caso Base (F0/F1)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box result"></div>
+                        <span>Resultado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box highlight"></div>
+                        <span>Destaque</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box duplicate"></div>
+                        <span>Cálculo Duplicado</span>
+                    </div>
+                </div>
+                
+                <div class="fibonacci-examples">
+                    <h4><i class="fas fa-list-ol"></i> Primeiros Números de Fibonacci</h4>
+                    <div class="examples-table" id="examplesTable">
+                        <!-- Exemplos serão preenchidos pelo JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/fibonacci.js') }}"></script>
+</body>
+</html>

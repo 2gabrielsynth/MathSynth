@@ -1,0 +1,987 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0a2e1a 0%, #1b5e3a 50%, #2e7d32 100%);
+    color: #e6e6e6;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #4caf50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #a9a9a9;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.content {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.controls {
+    flex: 1;
+    min-width: 350px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.visualization {
+    flex: 3;
+    min-width: 800px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.control-group {
+    margin-bottom: 25px;
+}
+
+.control-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #4caf50;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 10px;
+    appearance: standard;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #4caf50;
+    cursor: pointer;
+    border: 2px solid #0a2e1a;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #4caf50;
+    cursor: pointer;
+    border: 2px solid #0a2e1a;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #e6e6e6;
+    font-size: 1rem;
+    outline: none;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #e6e6e6;
+    font-size: 1rem;
+    outline: none;
+    cursor: pointer;
+}
+
+select option {
+    background: #0a2e1a;
+    color: #e6e6e6;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+    color: white;
+    grid-column: span 2;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e6e6e6;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.algorithm-info {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border-left: 4px solid #4caf50;
+}
+
+.algorithm-info h3 {
+    color: #4caf50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.algorithm-info p, .algorithm-info li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.algorithm-info ol, .algorithm-info ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.factorial-properties {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.factorial-properties h4 {
+    color: #4caf50;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.factorial-properties ul {
+    margin-left: 20px;
+}
+
+.factorial-properties li {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+/* Visualization Area */
+.visualization-area {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.function-visualization, .recursion-tree {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.function-visualization h3, .recursion-tree h3 {
+    color: #4caf50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.function-container {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.function-display {
+    font-size: 1.5rem;
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 2px solid #4caf50;
+    text-align: center;
+    min-width: 300px;
+}
+
+.function-equation {
+    font-size: 2rem;
+    color: #4caf50;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.function-result {
+    font-size: 3rem;
+    color: #ff9800;
+    font-weight: bold;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.recursion-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.stack-level {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.stack-level.active {
+    background: rgba(76, 175, 80, 0.2);
+    border: 2px solid #4caf50;
+    transform: scale(1.02);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+}
+
+.stack-level.solved {
+    background: rgba(255, 152, 0, 0.2);
+    border: 2px solid #ff9800;
+}
+
+.stack-level-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4caf50, #388e3c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    flex-shrink: 0;
+}
+
+.stack-level.active .stack-level-number {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    transform: scale(1.1);
+}
+
+.stack-level-content {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+}
+
+.stack-level-result {
+    font-weight: bold;
+    color: #ff9800;
+    margin-left: 10px;
+}
+
+/* Recursion Tree */
+/* .tree-container {
+    height: 1000px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    overflow: auto;
+} */
+
+.tree-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #666;
+}
+
+.tree-message i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #4caf50;
+}
+
+.tree-message p {
+    font-size: 1.1rem;
+}
+
+.tree-node {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 1.2rem;
+    transition: all 0.5s ease;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.tree-node.level-0 {
+    background: linear-gradient(135deg, #4caf50, #388e3c);
+    width: 80px;
+    height: 80px;
+    font-size: 1.5rem;
+}
+
+.tree-node.level-1 {
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+}
+
+.tree-node.level-2 {
+    background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+}
+
+.tree-node.level-3 {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+.tree-node.level-4 {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+.tree-node.solving {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px currentColor;
+    animation: pulse 1s infinite;
+}
+
+.tree-node.solved {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+    transform: scale(1.1);
+}
+
+.tree-connection {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    z-index: 1;
+    transition: all 0.5s ease;
+}
+
+.tree-label {
+    position: absolute;
+    color: #ff9800;
+    font-size: 0.9rem;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 3px 8px;
+    border-radius: 5px;
+    z-index: 3;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1.2); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1.2); }
+}
+
+/* Current Operation */
+.current-operation {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 25px 0;
+}
+
+.current-operation h4 {
+    color: #4caf50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.operation-details {
+    background: rgba(76, 175, 80, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #4caf50;
+    margin-bottom: 20px;
+}
+
+.operation-details p {
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.calculation-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+.info-label {
+    font-size: 0.9rem;
+    color: #a9a9a9;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #4caf50;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Status */
+.status {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 25px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.status-label {
+    font-size: 0.9rem;
+    color: #a9a9a9;
+    margin-bottom: 5px;
+}
+
+.status-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #4caf50;
+}
+
+/* Legend */
+.legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-box {
+    width: 25px;
+    height: 25px;
+    border-radius: 5px;
+}
+
+.color-box.recursive-call {
+    background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+.color-box.base-case {
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+}
+
+.color-box.solving {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+.color-box.solved {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+.color-box.returning {
+    background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+}
+
+.color-box.complete {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+}
+
+/* Formula Examples */
+.formula-examples {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.formula-examples h4 {
+    color: #4caf50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.example-item {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.example-formula {
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    color: #4caf50;
+    margin-bottom: 5px;
+}
+
+.example-result {
+    font-size: 1.5rem;
+    color: #ff9800;
+    font-weight: bold;
+}
+
+@media (max-width: 1200px) {
+    .content {
+        flex-direction: column;
+    }
+    
+    .controls, .visualization {
+        min-width: 100%;
+    }
+    
+    .visualization {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .btn-primary {
+        grid-column: span 1;
+    }
+    
+    .calculation-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .status {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .legend {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .examples-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Adicionar aos arquivos CSS de cada algoritmo */
+.array-container, .recursion-stack, .tree-container, .buckets-container {
+    overflow-y: auto;
+    overscroll-behavior: contain; /* Previne scroll da página */
+}
+
+/* Para o fatorial.css especificamente, adicione: */
+.recursion-stack {
+    max-height: 300px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* Adicionar ao factorial.css */
+.recursion-stack {
+    max-height: 300px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #4caf50 rgba(0, 0, 0, 0.2);
+}
+
+.recursion-stack::-webkit-scrollbar {
+    width: 8px;
+}
+
+.recursion-stack::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.recursion-stack::-webkit-scrollbar-thumb {
+    background: #4caf50;
+    border-radius: 4px;
+}
+
+.recursion-stack::-webkit-scrollbar-thumb:hover {
+    background: #388e3c;
+}
+
+/* Substituir as regras relacionadas à árvore no factorial.css */
+
+.tree-container {
+    min-height: 500px;
+    max-height: 600px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #4caf50 rgba(0, 0, 0, 0.2);
+}
+
+.tree-container::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.tree-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.tree-container::-webkit-scrollbar-thumb {
+    background: #4caf50;
+    border-radius: 4px;
+}
+
+.tree-container::-webkit-scrollbar-thumb:hover {
+    background: #388e3c;
+}
+
+/* Árvore vertical */
+.tree-vertical {
+    position: relative;
+    padding: 40px 20px;
+    min-height: 500px;
+}
+
+/* Container para cada nó na hierarquia vertical */
+.tree-node-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+/* Linha vertical conectando nó pai e filhos */
+.node-connection-vertical {
+    position: absolute;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.4);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+/* Nós da árvore */
+.tree-node {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 0.9rem;
+    transition: all 0.5s ease;
+    cursor: pointer;
+    z-index: 2;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin: 10px 0;
+}
+
+/* Cores por nível - agora todas ficam na vertical */
+.tree-node.level-0 {
+    background: linear-gradient(135deg, #4caf50, #388e3c);
+    width: 80px;
+    height: 80px;
+    font-size: 1.1rem;
+}
+
+.tree-node.level-1 {
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+}
+
+.tree-node.level-2 {
+    background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+}
+
+.tree-node.level-3 {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+.tree-node.level-4 {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+/* Cores cíclicas para mais níveis */
+.tree-node.level-5 { background: linear-gradient(135deg, #00bcd4, #0097a7); }
+.tree-node.level-6 { background: linear-gradient(135deg, #8bc34a, #689f38); }
+.tree-node.level-7 { background: linear-gradient(135deg, #ff5722, #e64a19); }
+.tree-node.level-8 { background: linear-gradient(135deg, #607d8b, #455a64); }
+.tree-node.level-9 { background: linear-gradient(135deg, #795548, #5d4037); }
+.tree-node.level-10 { background: linear-gradient(135deg, #9e9e9e, #616161); }
+
+/* Estados dos nós */
+.tree-node.solving {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+    animation: pulse 1s infinite;
+}
+
+.tree-node.solved {
+    background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+    transform: scale(1.1);
+}
+
+.tree-node.base-case {
+    background: linear-gradient(135deg, #2196f3, #1976d2) !important;
+    border: 3px solid white;
+}
+
+/* Conteúdo do nó */
+.node-content {
+    text-align: center;
+    padding: 5px;
+}
+
+.node-main-value {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 2px;
+}
+
+.node-result {
+    font-size: 0.9em;
+    color: #ffeb3b;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+.node-level {
+    font-size: 0.7em;
+    opacity: 0.8;
+    position: absolute;
+    top: -20px;
+    color: #888;
+}
+
+/* Linha horizontal para mostrar a multiplicação */
+.multiplication-line {
+    position: relative;
+    margin: 10px 0;
+    padding: 5px 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #ff9800;
+    z-index: 2;
+}
+
+.multiplication-line::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -10px;
+    width: 2px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-50%);
+}
+
+.multiplication-line::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    width: 2px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-50%);
+}
+
+/* Para árvores muito grandes */
+.tree-vertical.compact .tree-node {
+    width: 50px;
+    height: 50px;
+    font-size: 0.8rem;
+    margin: 5px 0;
+}
+
+.tree-vertical.compact .tree-node.level-0 {
+    width: 60px;
+    height: 60px;
+    font-size: 1rem;
+}
+
+.tree-vertical.compact .multiplication-line {
+    font-size: 0.8rem;
+    padding: 3px 10px;
+    margin: 5px 0;
+}
+
+/* Controles da árvore */
+.tree-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    display: flex;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.tree-control-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    background: rgba(76, 175, 80, 0.8);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.tree-control-btn:hover {
+    background: #4caf50;
+    transform: scale(1.1);
+}
+
+/* Indicador de progresso */
+.tree-progress {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    color: #4caf50;
+    z-index: 10;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1.1); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+    50% { transform: scale(1.15); box-shadow: 0 0 20px rgba(255, 255, 255, 0.7); }
+    100% { transform: scale(1.1); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+}

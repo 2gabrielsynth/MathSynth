@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counting Sort - Visualização</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/counting_sort.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-sort-numeric-down"></i> Counting Sort - Visualização</h1>
+            <p class="subtitle">Visualize como o algoritmo Counting Sort funciona usando contagem de elementos (algoritmo não baseado em comparação)</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="arraySize">Tamanho do Array:</label>
+                    <input type="range" id="arraySize" min="6" max="15" value="10">
+                    <span id="sizeValue">10</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Velocidade:</label>
+                    <input type="range" id="speed" min="1" max="40" value="15">
+                    <span id="speedValue">Médio</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="valueRange">Range de Valores:</label>
+                    <select id="valueRange">
+                        <option value="small">Pequeno (1-10)</option>
+                        <option value="medium" selected>Médio (1-20)</option>
+                        <option value="large">Grande (1-30)</option>
+                    </select>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Novo Array
+                    </button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Iniciar
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> Como o Counting Sort Funciona</h3>
+                    <p>O Counting Sort é um algoritmo de ordenação <strong>não baseado em comparação</strong> que funciona contando o número de ocorrências de cada valor.</p>
+                    <p><strong>Requisitos:</strong></p>
+                    <ul>
+                        <li>Funciona apenas com <strong>números inteiros</strong></li>
+                        <li>Conhece-se o <strong>range dos valores</strong> antecipadamente</li>
+                        <li>O range deve ser <strong>razoavelmente pequeno</strong></li>
+                    </ul>
+                    <p><strong>Passos:</strong></p>
+                    <ol>
+                        <li><strong>Encontrar o valor máximo</strong> no array</li>
+                        <li><strong>Criar array de contagem</strong> com tamanho = máximo + 1</li>
+                        <li><strong>Contar ocorrências</strong> de cada valor</li>
+                        <li><strong>Acumular contagens</strong> para obter posições</li>
+                        <li><strong>Construir array ordenado</strong> usando posições</li>
+                    </ol>
+                    <p><strong>Complexidade Temporal:</strong></p>
+                    <ul>
+                        <li>Melhor/Caso médio/Pior: O(n + k) onde k é o range</li>
+                        <li>Quando k = O(n): O(n)</li>
+                    </ul>
+                    <p><strong>Complexidade Espacial:</strong> O(n + k)</p>
+                    <p><strong>Estável:</strong> Sim (implementação correta)</p>
+                    <p><strong>In-place:</strong> Não</p>
+                </div>
+                
+                <div class="algorithm-notes">
+                    <h4><i class="fas fa-lightbulb"></i> Observações Importantes</h4>
+                    <ul>
+                        <li><strong>Não é baseado em comparação</strong>: Não compara elementos entre si</li>
+                        <li><strong>Linear no melhor caso</strong>: Pode ser O(n) se k = O(n)</li>
+                        <li><strong>Ideal para</strong>: Dados com range limitado (idades, notas, etc.)</li>
+                        <li><strong>Estabilidade</strong>: Preserva ordem relativa de elementos iguais</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="main-arrays">
+                    <div class="input-array">
+                        <h3><i class="fas fa-sign-in-alt"></i> Array de Entrada</h3>
+                        <div class="array-container" id="inputArray"></div>
+                    </div>
+                    
+                    <div class="output-array">
+                        <h3><i class="fas fa-sign-out-alt"></i> Array de Saída (Ordenado)</h3>
+                        <div class="array-container" id="outputArray"></div>
+                    </div>
+                </div>
+                
+                <div class="counting-section">
+                    <h3><i class="fas fa-calculator"></i> Array de Contagem</h3>
+                    <div class="count-container" id="countArray"></div>
+                    <div class="count-explanation">
+                        <p>Índice = Valor | Valor = Quantidade</p>
+                    </div>
+                </div>
+                
+                <div class="current-operation">
+                    <h4><i class="fas fa-cogs"></i> Operação Atual</h4>
+                    <div class="operation-details" id="operationDetails">
+                        <p>Aguardando início...</p>
+                    </div>
+                    
+                    <div class="step-indicator">
+                        <div class="step active" id="step1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Encontrar Máximo</div>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Contar Ocorrências</div>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Acumular Contagens</div>
+                        </div>
+                        <div class="step" id="step4">
+                            <div class="step-number">4</div>
+                            <div class="step-label">Construir Saída</div>
+                        </div>
+                        <div class="step" id="step5">
+                            <div class="step-number">5</div>
+                            <div class="step-label">Completo</div>
+                        </div>
+                    </div>
+                    
+                    <div class="current-values">
+                        <div class="value-item">
+                            <span class="value-label">Valor Atual:</span>
+                            <span id="currentValue" class="value-display">-</span>
+                        </div>
+                        <div class="value-item">
+                            <span class="value-label">Índice Contagem:</span>
+                            <span id="currentIndex" class="value-display">-</span>
+                        </div>
+                        <div class="value-item">
+                            <span class="value-label">Contagem:</span>
+                            <span id="currentCount" class="value-display">-</span>
+                        </div>
+                        <div class="value-item">
+                            <span class="value-label">Posição:</span>
+                            <span id="currentPosition" class="value-display">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Valor Máximo:</span>
+                        <span id="maxValue" class="status-value">-</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Contagens:</span>
+                        <span id="countOperations" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Posicionamentos:</span>
+                        <span id="placementOperations" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Tamanho Range:</span>
+                        <span id="rangeSize" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Pronto</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box input"></div>
+                        <span>Array de Entrada</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box output"></div>
+                        <span>Array de Saída</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box count"></div>
+                        <span>Array de Contagem</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box processing"></div>
+                        <span>Processando</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box counted"></div>
+                        <span>Contado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box positioned"></div>
+                        <span>Posicionado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box current-max"></div>
+                        <span>Máximo Atual</span>
+                    </div>
+                </div>
+                
+                <div class="efficiency-info">
+                    <h4><i class="fas fa-chart-line"></i> Análise de Eficiência</h4>
+                    <div class="efficiency-metrics">
+                        <div class="metric">
+                            <div class="metric-label">n (tamanho array)</div>
+                            <div class="metric-value" id="arraySizeValue">10</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">k (tamanho range)</div>
+                            <div class="metric-value" id="rangeValue">0</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Complexidade</div>
+                            <div class="metric-value" id="complexityValue">O(n + k)</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Estabilidade</div>
+                            <div class="metric-value stability">✅ Sim</div>
+                        </div>
+                    </div>
+                    <div class="efficiency-chart">
+                        <div class="chart-bar" id="nBar">
+                            <div class="chart-label">n = <span id="nValue">10</span></div>
+                        </div>
+                        <div class="chart-bar" id="kBar">
+                            <div class="chart-label">k = <span id="kValue">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/counting_sort.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torre de Hanói - Visualização</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hanoi.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-tower"></i> Torre de Hanói - Visualização</h1>
+            <p class="subtitle">Resolva o clássico problema da Torre de Hanói e visualize o algoritmo recursivo em ação</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="diskCount">Número de Discos:</label>
+                    <input type="range" id="diskCount" min="1" max="8" value="3">
+                    <span id="diskCountValue">3</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Velocidade da Animação:</label>
+                    <input type="range" id="speed" min="1" max="40" value="20">
+                    <span id="speedValue">Médio</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="showNumbers">Mostrar Números nos Discos:</label>
+                    <select id="showNumbers">
+                        <option value="true">Sim</option>
+                        <option value="false">Não</option>
+                    </select>
+                </div>
+                
+                <div class="buttons">
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Iniciar Solução
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button id="stepBtn" class="btn btn-secondary">
+                        <i class="fas fa-step-forward"></i> Passo a Passo
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                    <button id="autoSolveBtn" class="btn">
+                        <i class="fas fa-robot"></i> Resolver Automaticamente
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> O Problema da Torre de Hanói</h3>
+                    <p>O objetivo é mover todos os discos da torre esquerda (A) para a torre direita (C), seguindo estas regras:</p>
+                    <ol>
+                        <li>Apenas um disco pode ser movido por vez</li>
+                        <li>Sempre mova o disco do topo de uma torre</li>
+                        <li>Um disco maior nunca pode ficar sobre um menor</li>
+                        <li>Use a torre do meio (B) como auxiliar</li>
+                    </ol>
+                    
+                    <p><strong>Solução Recursiva:</strong></p>
+                    <div style="font-family: 'Courier New', monospace; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin: 10px 0;">
+                        <p>hanoi(n, origem, destino, auxiliar):</p>
+                        <p style="margin-left: 20px;">se n == 1:</p>
+                        <p style="margin-left: 40px;">mover disco de origem para destino</p>
+                        <p style="margin-left: 20px;">senão:</p>
+                        <p style="margin-left: 40px;">hanoi(n-1, origem, auxiliar, destino)</p>
+                        <p style="margin-left: 40px;">mover disco n de origem para destino</p>
+                        <p style="margin-left: 40px;">hanoi(n-1, auxiliar, destino, origem)</p>
+                    </div>
+                    
+                    <p><strong>Número Mínimo de Movimentos:</strong></p>
+                    <p style="text-align: center; font-size: 1.3rem; color: #ffd166;">
+                        M(n) = 2ⁿ - 1
+                    </p>
+                </div>
+                
+                <div class="hanoi-properties">
+                    <h4><i class="fas fa-check-circle"></i> Propriedades Matemáticas</h4>
+                    <ul>
+                        <li><strong>Complexidade:</strong> O(2ⁿ) movimentos necessários</li>
+                        <li><strong>Recursão:</strong> Solução naturalmente recursiva</li>
+                        <li><strong>Exponencial:</strong> Crescimento rápido com n</li>
+                        <li><strong>Ótimo:</strong> Algoritmo recursivo é ótimo (mínimo de movimentos)</li>
+                    </ul>
+                </div>
+                
+                <div class="min-moves-calculator">
+                    <h4><i class="fas fa-calculator"></i> Calculadora de Movimentos</h4>
+                    <p>Número mínimo de movimentos para <span id="currentDiskCount">3</span> discos:</p>
+                    <div class="min-moves-formula">
+                        2^<span id="formulaN">3</span> - 1
+                    </div>
+                    <div class="min-moves-result" id="minMovesResult">
+                        7
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="visualization-area">
+                    <div class="hanoi-game">
+                        <h3><i class="fas fa-gamepad"></i> Torre de Hanói</h3>
+                        <div class="game-container" id="gameContainer">
+                            <!-- Instrução do movimento atual -->
+                            <div class="move-instruction" id="moveInstruction" style="display: none;">
+                                <span class="step-number" id="stepNumber">1</span>
+                                <span id="moveText">Mover disco 1 de A para C</span>
+                            </div>
+                            
+                            <!-- Contador de movimentos -->
+                            <div class="move-counter" id="moveCounter">
+                                Movimento: <span id="currentMove">0</span>/<span id="totalMoves">7</span>
+                            </div>
+                            
+                            <!-- Torres -->
+                            <div class="towers-base">
+                                <!-- Torre A (Origem) -->
+                                <div class="tower" id="towerA">
+                                    <div class="tower-pillar"></div>
+                                    <div class="tower-base"></div>
+                                    <div class="tower-label">Torre A (Origem)</div>
+                                    <div class="tower-disks" id="disksA">
+                                        <!-- Discos serão inseridos aqui -->
+                                    </div>
+                                </div>
+                                
+                                <!-- Torre B (Auxiliar) -->
+                                <div class="tower" id="towerB">
+                                    <div class="tower-pillar"></div>
+                                    <div class="tower-base"></div>
+                                    <div class="tower-label">Torre B (Auxiliar)</div>
+                                    <div class="tower-disks" id="disksB"></div>
+                                </div>
+                                
+                                <!-- Torre C (Destino) -->
+                                <div class="tower" id="towerC">
+                                    <div class="tower-pillar"></div>
+                                    <div class="tower-base"></div>
+                                    <div class="tower-label">Torre C (Destino)</div>
+                                    <div class="tower-disks" id="disksC"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="current-operation">
+                        <h4><i class="fas fa-cogs"></i> Operação Atual</h4>
+                        <div class="operation-details" id="operationDetails">
+                            <p>Configure o número de discos e clique em "Iniciar Solução" para começar.</p>
+                        </div>
+                        
+                        <div class="move-info">
+                            <div class="info-item">
+                                <span class="info-label">Disco Atual:</span>
+                                <span id="currentDisk" class="info-value">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Origem:</span>
+                                <span id="sourceTower" class="info-value">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Destino:</span>
+                                <span id="destinationTower" class="info-value">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Auxiliar:</span>
+                                <span id="auxiliaryTower" class="info-value">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status">
+                        <div class="status-item">
+                            <span class="status-label">Movimentos:</span>
+                            <span id="moveCount" class="status-value">0</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Tempo:</span>
+                            <span id="executionTime" class="status-value">0s</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Recursões:</span>
+                            <span id="recursionCount" class="status-value">0</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Status:</span>
+                            <span id="statusText" class="status-value">Pronto</span>
+                        </div>
+                    </div>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="disk-sample size-1"></div>
+                            <span>Disco 1 (Menor)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="disk-sample size-2"></div>
+                            <span>Disco 2</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="disk-sample size-3"></div>
+                            <span>Disco 3</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="disk-sample size-4"></div>
+                            <span>Disco 4</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="disk-sample size-5"></div>
+                            <span>Disco 5 (Maior)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="recursion-visualization">
+                        <h4><i class="fas fa-sitemap"></i> Pilha de Recursão</h4>
+                        <div class="recursion-stack" id="recursionStack">
+                            <!-- Chamadas recursivas serão mostradas aqui -->
+                        </div>
+                    </div>
+                    
+                    <div class="complexity-info">
+                        <h4><i class="fas fa-chart-line"></i> Complexidade do Algoritmo</h4>
+                        <div class="complexity-item">
+                            <span class="complexity-label">Movimentos Necessários:</span>
+                            <span class="complexity-value">O(2ⁿ)</span>
+                        </div>
+                        <div class="complexity-item">
+                            <span class="complexity-label">Complexidade Temporal:</span>
+                            <span class="complexity-value">O(2ⁿ)</span>
+                        </div>
+                        <div class="complexity-item">
+                            <span class="complexity-label">Complexidade Espacial:</span>
+                            <span class="complexity-value">O(n)</span>
+                        </div>
+                        <div class="complexity-item">
+                            <span class="complexity-label">Profundidade de Recursão:</span>
+                            <span class="complexity-value">O(n)</span>
+                 W       </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/hanoi.js') }}"></script>
+</body>
+</html>

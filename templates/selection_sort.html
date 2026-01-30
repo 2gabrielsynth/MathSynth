@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selection Sort Visualization</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/selection_sort.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-search"></i> Selection Sort Visualization</h1>
+            <p class="subtitle">Visualize how the Selection Sort algorithm finds the minimum element in each pass</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="arraySize">Array Size:</label>
+                    <input type="range" id="arraySize" min="5" max="30" value="12">
+                    <span id="sizeValue">12</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Animation Speed:</label>
+                    <input type="range" id="speed" min="1" max="40" value="15">
+                    <span id="speedValue">Medium</span>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Generate New Array
+                    </button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Start Sorting
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> How Selection Sort Works</h3>
+                    <p>Selection Sort divides the array into sorted and unsorted parts. In each iteration, it finds the minimum element from the unsorted part and puts it at the beginning of the unsorted part.</p>
+                    <p><strong>Steps:</strong></p>
+                    <ol>
+                        <li>Find the minimum element in the unsorted array</li>
+                        <li>Swap it with the first element of the unsorted part</li>
+                        <li>Move the boundary between sorted and unsorted one element to the right</li>
+                        <li>Repeat until the array is sorted</li>
+                    </ol>
+                    <p><strong>Time Complexity:</strong> O(n²) in all cases</p>
+                    <p><strong>Space Complexity:</strong> O(1)</p>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="array-container" id="arrayContainer"></div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Comparisons:</span>
+                        <span id="comparisonCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Swaps:</span>
+                        <span id="swapCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Pass:</span>
+                        <span id="passCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Ready</span>
+                    </div>
+                </div>
+                
+                <div class="current-min">
+                    <div class="min-info">
+                        <span class="min-label">Current Minimum:</span>
+                        <span id="currentMinValue" class="min-value">-</span>
+                        <span class="min-label">at index:</span>
+                        <span id="currentMinIndex" class="min-value">-</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box sorted"></div>
+                        <span>Sorted</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box unsorted"></div>
+                        <span>Unsorted</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box current-min"></div>
+                        <span>Current Minimum</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box comparing"></div>
+                        <span>Comparing</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box swapping"></div>
+                        <span>Swapping</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/selection_sort.js') }}"></script>
+</body>
+</html>

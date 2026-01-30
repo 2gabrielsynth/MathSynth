@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fatorial - Visualização</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fatorial.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calculator"></i> Fatorial - Visualização</h1>
+            <p class="subtitle">Visualize como o cálculo fatorial funciona, incluindo a recursão e o processo iterativo</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="numberInput">Número para calcular fatorial (n):</label>
+                    <input type="number" id="numberInput" min="0" max="20" value="5">
+                    <small style="color: #888; display: block; margin-top: 5px;">Máximo: 20 (devido ao tamanho de números inteiros)</small>
+                </div>
+                
+                <div class="control-group">
+                    <label for="methodSelect">Método de Cálculo:</label>
+                    <select id="methodSelect">
+                        <option value="recursive">Recursivo</option>
+                        <option value="iterative">Iterativo</option>
+                        <option value="both">Ambos (Comparação)</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Velocidade da Animação:</label>
+                    <input type="range" id="speed" min="1" max="40" value="20">
+                    <span id="speedValue">Médio</span>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Número Aleatório
+                    </button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Calcular
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> O que é Fatorial?</h3>
+                    <p>O fatorial de um número inteiro não negativo <strong>n</strong> (denotado por <strong>n!</strong>) é o produto de todos os inteiros positivos menores ou iguais a n.</p>
+                    
+                    <p><strong>Definição Matemática:</strong></p>
+                    <div style="text-align: center; margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <p style="font-family: 'Courier New', monospace; font-size: 1.3rem;">
+                            n! = n × (n-1) × (n-2) × ... × 3 × 2 × 1
+                        </p>
+                        <p style="font-family: 'Courier New', monospace; font-size: 1.3rem;">
+                            0! = 1 (caso base)
+                        </p>
+                    </div>
+                    
+                    <p><strong>Exemplos:</strong></p>
+                    <ul>
+                        <li>5! = 5 × 4 × 3 × 2 × 1 = 120</li>
+                        <li>3! = 3 × 2 × 1 = 6</li>
+                        <li>1! = 1</li>
+                        <li>0! = 1</li>
+                    </ul>
+                    
+                    <p><strong>Aplicações:</strong></p>
+                    <ul>
+                        <li>Cálculo de permutações e combinações</li>
+                        <li>Análise combinatória</li>
+                        <li>Probabilidade e estatística</li>
+                        <li>Séries de Taylor em matemática</li>
+                    </ul>
+                </div>
+                
+                <div class="factorial-properties">
+                    <h4><i class="fas fa-check-circle"></i> Propriedades do Fatorial</h4>
+                    <ul>
+                        <li><strong>Crescimento Superexponencial</strong>: n! cresce mais rápido que qualquer função exponencial</li>
+                        <li><strong>Recursividade Natural</strong>: n! = n × (n-1)!</li>
+                        <li><strong>Função Discreta</strong>: Definida apenas para inteiros não negativos</li>
+                        <li><strong>Função Gama</strong>: Para números reais e complexos, usa-se a função gama: Γ(n+1) = n!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="visualization-area">
+                    <div class="function-visualization">
+                        <h3><i class="fas fa-function"></i> Cálculo do Fatorial</h3>
+                        <div class="function-container">
+                            <div class="function-display" id="functionDisplay">
+                                <div id="currentCalculation">5! = ?</div>
+                                <div class="function-equation" id="functionEquation"></div>
+                                <div class="function-result" id="functionResult"></div>
+                            </div>
+                            <div class="recursion-stack" id="recursionStack"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="recursion-tree">
+                        <h3><i class="fas fa-project-diagram"></i> Árvore de Recursão</h3>
+                        <div class="tree-container" id="treeContainer">
+                            <div class="tree-message">
+                                <i class="fas fa-tree"></i>
+                                <p>Árvore de recursão aparecerá aqui durante o cálculo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="current-operation">
+                    <h4><i class="fas fa-cogs"></i> Operação Atual</h4>
+                    <div class="operation-details" id="operationDetails">
+                        <p>Aguardando cálculo... Insira um número e clique em "Calcular".</p>
+                    </div>
+                    
+                    <div class="calculation-info">
+                        <div class="info-item">
+                            <span class="info-label">n:</span>
+                            <span id="currentN" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Passo Atual:</span>
+                            <span id="currentStep" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Resultado Parcial:</span>
+                            <span id="partialResult" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Nível de Recursão:</span>
+                            <span id="recursionLevel" class="info-value">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Multiplicações:</span>
+                        <span id="multiplicationCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Chamadas Recursivas:</span>
+                        <span id="recursiveCalls" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Tempo Estimado:</span>
+                        <span id="estimatedTime" class="status-value">0ms</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Pronto</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box recursive-call"></div>
+                        <span>Chamada Recursiva</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box base-case"></div>
+                        <span>Caso Base (0! ou 1!)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box solving"></div>
+                        <span>Resolvendo</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box solved"></div>
+                        <span>Resolvido</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box returning"></div>
+                        <span>Retornando Valor</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box complete"></div>
+                        <span>Cálculo Completo</span>
+                    </div>
+                </div>
+                
+                <div class="formula-examples">
+                    <h4><i class="fas fa-list-ol"></i> Exemplos de Fatoriais</h4>
+                    <div class="examples-grid" id="examplesGrid">
+                        <!-- Será preenchido pelo JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/fatorial.js') }}"></script>
+</body>
+</html>

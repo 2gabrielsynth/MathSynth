@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backtracking - Labirintos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/backtracking.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1><i class="fas fa-robot"></i> Backtracking - Resolução de Labirintos</h1>
+                <p class="subtitle">Visualização do algoritmo DFS (Depth-First Search) com backtracking</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Painel de Controles -->
+            <aside class="controls-panel">
+                <!-- Configurações -->
+                <section class="control-section">
+                    <h2><i class="fas fa-sliders-h"></i> Configurações</h2>
+                    <div class="control-group">
+                        <label for="mazeSize">Tamanho do Labirinto:</label>
+                        <div class="slider-group">
+                            <input type="range" id="mazeSize" min="5" max="20" value="10">
+                            <span id="mazeSizeValue" class="value-display">10x10</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="wallDensity">Densidade de Paredes:</label>
+                        <div class="slider-group">
+                            <input type="range" id="wallDensity" min="10" max="40" value="25">
+                            <span id="wallDensityValue" class="value-display">25%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="algorithmType">Algoritmo:</label>
+                        <select id="algorithmType">
+                            <option value="dfs">DFS Padrão</option>
+                            <option value="dfs_random">DFS Aleatório</option>
+                            <option value="dfs_heuristic">DFS Heurístico</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="animationSpeed">Velocidade:</label>
+                        <div class="slider-group">
+                            <input type="range" id="animationSpeed" min="10" max="500" value="100">
+                            <span id="animationSpeedValue" class="value-display">Normal</span>
+                        </div>
+                    </div>
+                    
+                    <div class="buttons-container">
+                        <button id="generateMazeBtn" class="btn btn-generate">
+                            <i class="fas fa-dungeon"></i> Novo Labirinto
+                        </button>
+                        <button id="startBtn" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Resolver
+                        </button>
+                        <button id="pauseBtn" class="btn btn-secondary" disabled>
+                            <i class="fas fa-pause"></i> Pausar
+                        </button>
+                        <button id="stepBtn" class="btn btn-secondary">
+                            <i class="fas fa-forward"></i> Passo
+                        </button>
+                        <button id="resetBtn" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i> Reiniciar
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Estatísticas -->
+                <section class="stats-section">
+                    <h2><i class="fas fa-chart-bar"></i> Estatísticas</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Status:</span>
+                            <span id="status" class="status-badge status-ready">Pronto</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Tamanho:</span>
+                            <span id="currentSize" class="stat-value">10x10</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Células:</span>
+                            <span id="totalCells" class="stat-value">100</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Exploradas:</span>
+                            <span id="exploredCells" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Backtracks:</span>
+                            <span id="backtrackCount" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Caminho:</span>
+                            <span id="pathLength" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Tempo:</span>
+                            <span id="executionTime" class="stat-value">0s</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Informações do Estado -->
+                <section class="state-section">
+                    <h2><i class="fas fa-info-circle"></i> Estado Atual</h2>
+                    <div class="state-grid">
+                        <div class="state-item">
+                            <span class="state-label">Posição:</span>
+                            <span id="currentPosition" class="state-value">(1, 1)</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-label">Direção:</span>
+                            <span id="currentDirection" class="state-value">-</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-label">Pilha:</span>
+                            <span id="stackSize" class="state-value">0</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-label">Próximo:</span>
+                            <span id="nextMove" class="state-value">-</span>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- Área de Visualização -->
+            <div class="visualization-area">
+                <!-- Labirinto -->
+                <section class="maze-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-th"></i> Labirinto</h2>
+                        <div class="maze-controls">
+                            <button id="zoomIn" class="icon-btn" title="Zoom In">
+                                <i class="fas fa-search-plus"></i>
+                            </button>
+                            <button id="zoomOut" class="icon-btn" title="Zoom Out">
+                                <i class="fas fa-search-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="maze-container">
+                        <div class="maze-wrapper">
+                            <div class="maze-grid" id="mazeGrid">
+                                <!-- Labirinto gerado aqui -->
+                            </div>
+                        </div>
+                        
+                        <div class="legend-container">
+                            <div class="legend-item">
+                                <div class="legend-color start"></div>
+                                <span>Início</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color end"></div>
+                                <span>Fim</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color path"></div>
+                                <span>Caminho</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color visited"></div>
+                                <span>Visitado</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color backtrack"></div>
+                                <span>Backtrack</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color wall"></div>
+                                <span>Parede</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Painéis Inferiores -->
+                <div class="bottom-panels">
+                    <!-- Pilha de Execução -->
+                    <section class="panel stack-panel">
+                        <h2><i class="fas fa-layer-group"></i> Pilha de Execução</h2>
+                        <div class="panel-content" id="stackContainer">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>Pilha vazia</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Log de Execução -->
+                    <section class="panel log-panel">
+                        <h2><i class="fas fa-terminal"></i> Log de Execução</h2>
+                        <div class="panel-content" id="logContainer">
+                            <div class="log-entry info">
+                                <span class="log-time">00:00:00</span>
+                                <span class="log-message">Sistema inicializado. Gere um labirinto e clique em Resolver.</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/backtracking.js') }}"></script>
+</body>
+</html>

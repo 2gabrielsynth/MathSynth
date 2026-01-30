@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radix Sort - Visualização</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/radix_sort.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-sort-numeric-down"></i> Radix Sort - Visualização</h1>
+            <p class="subtitle">Visualize como o algoritmo Radix Sort funciona ordenando números dígito por dígito usando buckets</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="arraySize">Tamanho do Array:</label>
+                    <input type="range" id="arraySize" min="5" max="15" value="8">
+                    <span id="sizeValue">8</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Velocidade:</label>
+                    <input type="range" id="speed" min="1" max="40" value="20">
+                    <span id="speedValue">Médio</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="base">Base Numérica:</label>
+                    <select id="base">
+                        <option value="10">Base 10 (Decimal)</option>
+                        <option value="2">Base 2 (Binário)</option>
+                        <option value="8">Base 8 (Octal)</option>
+                        <option value="16">Base 16 (Hexadecimal)</option>
+                    </select>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Novo Array
+                    </button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Iniciar
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> Como o Radix Sort Funciona</h3>
+                    <p>O Radix Sort é um algoritmo de ordenação não-comparativo que ordena números processando dígitos individualmente.</p>
+                    <p><strong>Passos (LSD - Least Significant Digit):</strong></p>
+                    <ol>
+                        <li><strong>Encontrar máximo</strong>: Determinar o número máximo para saber quantos dígitos processar</li>
+                        <li><strong>Ordenar por dígitos</strong>: Para cada dígito (do menos ao mais significativo):
+                            <ul>
+                                <li>Distribuir números em buckets (0-9 para base 10)</li>
+                                <li>Coletar números dos buckets na ordem</li>
+                            </ul>
+                        </li>
+                        <li><strong>Repetir</strong>: Repetir para cada posição de dígito</li>
+                    </ol>
+                    <p><strong>Complexidade Temporal:</strong></p>
+                    <ul>
+                        <li>Melhor caso: O(nk) onde k é número de dígitos</li>
+                        <li>Caso médio: O(nk)</li>
+                        <li>Pior caso: O(nk)</li>
+                    </ul>
+                    <p><strong>Complexidade Espacial:</strong> O(n + k)</p>
+                    <p><strong>Estável:</strong> Sim</p>
+                    <p><strong>In-place:</strong> Não</p>
+                </div>
+                
+                <div class="radix-properties">
+                    <h4><i class="fas fa-check-circle"></i> Propriedades do Radix Sort</h4>
+                    <ul>
+                        <li><strong>Algoritmo Estável</strong>: Mantém a ordem relativa de elementos com mesmo valor</li>
+                        <li><strong>Base Dependente</strong>: Funciona com qualquer sistema numérico (binário, decimal, etc.)</li>
+                        <li><strong>LSD vs MSD</strong>: Pode ser implementado do dígito menos (LSD) ou mais (MSD) significativo</li>
+                        <li><strong>Sub-rotina</strong>: Usa Counting Sort ou Bucket Sort para cada dígito</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="visualization-area">
+                    <div class="array-visualization">
+                        <h3><i class="fas fa-list-ol"></i> Array</h3>
+                        <div class="array-container" id="arrayContainer"></div>
+                    </div>
+                    
+                    <div class="buckets-visualization">
+                        <h3><i class="fas fa-boxes"></i> Buckets (0-9)</h3>
+                        <div class="buckets-container" id="bucketsContainer"></div>
+                    </div>
+                </div>
+                
+                <div class="current-operation">
+                    <h4><i class="fas fa-cogs"></i> Operação Atual</h4>
+                    <div class="operation-details" id="operationDetails">
+                        <p>Aguardando início... Clique em "Iniciar" para começar a visualização.</p>
+                    </div>
+                    
+                    <div class="step-info">
+                        <div class="info-item">
+                            <span class="info-label">Dígito Atual:</span>
+                            <span id="currentDigit" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Valor do Dígito:</span>
+                            <span id="digitValue" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Bucket Ativo:</span>
+                            <span id="activeBucket" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Número Atual:</span>
+                            <span id="currentNumber" class="info-value">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Iterações:</span>
+                        <span id="iterationCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Dígitos Processados:</span>
+                        <span id="digitsProcessed" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Máximo de Dígitos:</span>
+                        <span id="maxDigits" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Pronto</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box unsorted"></div>
+                        <span>Não Processado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box processing"></div>
+                        <span>Em Processamento</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box bucket-distributed"></div>
+                        <span>No Bucket</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box comparing"></div>
+                        <span>Comparando Dígito</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box moving-to-bucket"></div>
+                        <span>Movendo para Bucket</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box sorted"></div>
+                        <span>Ordenado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box current-digit-highlight"></div>
+                        <span>Dígito Atual</span>
+                    </div>
+                </div>
+                
+                <div class="radix-representation">
+                    <h4><i class="fas fa-sitemap"></i> Representação dos Dígitos</h4>
+                    <div class="representation-info">
+                        <p>Exemplo: Número 345 processado dígito por dígito:</p>
+                        <div class="digit-mapping">
+                            <div class="mapping-item">
+                                <span class="digit-value">5</span>
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="digit-explanation">1º dígito (unidades) → Bucket 5</span>
+                            </div>
+                            <div class="mapping-item">
+                                <span class="digit-value">4</span>
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="digit-explanation">2º dígito (dezenas) → Bucket 4</span>
+                            </div>
+                            <div class="mapping-item">
+                                <span class="digit-value">3</span>
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="digit-explanation">3º dígito (centenas) → Bucket 3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/radix_sort.js') }}"></script>
+</body>
+</html>

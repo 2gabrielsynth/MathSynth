@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradiente Descendente</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/gradient.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📉 GRADIENTE DESCENDENTE</h1>
+            <p class="subtitle">Otimização de funções através do algoritmo de aprendizado de máquina mais popular</p>
+        </header>
+
+        <main class="main-content">
+            <div class="visualization-section">
+                <div class="plot-container">
+                    <div class="plot-header">
+                        <h2><i class="fas fa-chart-line"></i> Superfície da Função</h2>
+                        <div class="plot-controls">
+                            <button id="rotate3dBtn" class="btn btn-small">
+                                <i class="fas fa-sync-alt"></i> Girar 3D
+                            </button>
+                            <button id="resetViewBtn" class="btn btn-small">
+                                <i class="fas fa-undo"></i> Resetar Vista
+                            </button>
+                        </div>
+                    </div>
+                    <div id="surfacePlot" class="plot-area"></div>
+                </div>
+                
+                <div class="contour-container">
+                    <div class="plot-header">
+                        <h2><i class="fas fa-map"></i> Curvas de Nível</h2>
+                        <div class="plot-controls">
+                            <button id="toggleContourBtn" class="btn btn-small">
+                                <i class="fas fa-layer-group"></i> Mostrar/Esconder
+                            </button>
+                        </div>
+                    </div>
+                    <div id="contourPlot" class="plot-area"></div>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h2><i class="fas fa-info-circle"></i> Sobre o Gradiente Descendente</h2>
+                    <div class="info-content">
+                        <p>O <strong>Gradiente Descendente</strong> é um algoritmo de otimização de primeira ordem usado para encontrar o mínimo de uma função.</p>
+                        
+                        <h3><i class="fas fa-calculator"></i> Fórmula de Atualização</h3>
+                        <div class="formula">
+                            θ<sub>t+1</sub> = θ<sub>t</sub> - η ∇J(θ<sub>t</sub>)
+                        </div>
+                        <ul>
+                            <li><strong>θ</strong>: Parâmetros do modelo</li>
+                            <li><strong>η</strong>: Taxa de aprendizado (learning rate)</li>
+                            <li><strong>∇J(θ)</strong>: Gradiente da função custo</li>
+                        </ul>
+                        
+                        <h3><i class="fas fa-project-diagram"></i> Variantes do Algoritmo</h3>
+                        <div class="variants">
+                            <div class="variant">
+                                <h4><i class="fas fa-walking"></i> Batch GD</h4>
+                                <p>Usa todo o dataset para cada atualização. Lento mas preciso.</p>
+                            </div>
+                            <div class="variant">
+                                <h4><i class="fas fa-running"></i> Stochastic GD</h4>
+                                <p>Usa uma amostra por vez. Rápido mas com alta variância.</p>
+                            </div>
+                            <div class="variant">
+                                <h4><i class="fas fa-users"></i> Mini-batch GD</h4>
+                                <p>Usa pequenos batches. Balance entre velocidade e estabilidade.</p>
+                            </div>
+                        </div>
+                        
+                        <h3><i class="fas fa-lightbulb"></i> Aplicações</h3>
+                        <ul class="applications">
+                            <li><i class="fas fa-brain"></i> Redes Neurais e Deep Learning</li>
+                            <li><i class="fas fa-chart-bar"></i> Regressão Linear e Logística</li>
+                            <li><i class="fas fa-robot"></i> Sistemas de Recomendação</li>
+                            <li><i class="fas fa-filter"></i> Processamento de Imagens</li>
+                            <li><i class="fas fa-language"></i> Processamento de Linguagem Natural</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="control-panel">
+                    <h2><i class="fas fa-sliders-h"></i> Controles</h2>
+                    
+                    <div class="control-group">
+                        <h3><i class="fas fa-function"></i> Função de Teste</h3>
+                        <div class="function-selector">
+                            <select id="functionSelect">
+                                <option value="sphere">Esfera: f(x,y) = x² + y²</option>
+                                <option value="rosenbrock">Rosenbrock: f(x,y) = (1-x)² + 100(y-x²)²</option>
+                                <option value="rastrigin">Rastrigin: f(x,y) = 20 + (x²-10cos(2πx)) + (y²-10cos(2πy))</option>
+                                <option value="ackley">Ackley: f(x,y) = -20exp(-0.2√(0.5(x²+y²))) - exp(0.5(cos(2πx)+cos(2πy))) + e + 20</option>
+                                <option value="beale">Beale: f(x,y) = (1.5-x+xy)² + (2.25-x+xy²)² + (2.625-x+xy³)²</option>
+                                <option value="himmelblau">Himmelblau: f(x,y) = (x²+y-11)² + (x+y²-7)²</option>
+                                <option value="custom">Função Personalizada</option>
+                            </select>
+                        </div>
+                        
+                        <div class="custom-function" id="customFunctionSection" style="display: none;">
+                            <textarea id="customFunctionExpr" placeholder="Exemplo: Math.sin(x)*Math.cos(y) + 0.1*x*y"></textarea>
+                            <div class="hint">
+                                <i class="fas fa-info-circle"></i> Use x, y como variáveis. Exemplo válido: Math.pow(x,2) + Math.pow(y,2)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-cogs"></i> Parâmetros do Algoritmo</h3>
+                        <div class="params-grid">
+                            <div class="param-slider">
+                                <label for="learningRate">
+                                    <i class="fas fa-tachometer-alt"></i> Taxa de Aprendizado (η):
+                                </label>
+                                <input type="range" id="learningRate" min="0.001" max="0.5" step="0.001" value="0.1">
+                                <span id="learningRateValue" class="value-display">0.100</span>
+                            </div>
+                            
+                            <div class="param-slider">
+                                <label for="iterations">
+                                    <i class="fas fa-redo"></i> Número de Iterações:
+                                </label>
+                                <input type="range" id="iterations" min="10" max="500" step="10" value="100">
+                                <span id="iterationsValue" class="value-display">100</span>
+                            </div>
+                            
+                            <div class="param-slider">
+                                <label for="momentum">
+                                    <i class="fas fa-weight"></i> Momentum (β):
+                                </label>
+                                <input type="range" id="momentum" min="0" max="0.99" step="0.01" value="0.9">
+                                <span id="momentumValue" class="value-display">0.90</span>
+                            </div>
+                            
+                            <div class="param-input">
+                                <label for="startX">
+                                    <i class="fas fa-crosshairs"></i> Ponto Inicial X:
+                                </label>
+                                <input type="number" id="startX" step="0.1" value="-2.0">
+                            </div>
+                            
+                            <div class="param-input">
+                                <label for="startY">
+                                    <i class="fas fa-crosshairs"></i> Ponto Inicial Y:
+                                </label>
+                                <input type="number" id="startY" step="0.1" value="2.0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-play-circle"></i> Execução</h3>
+                        <div class="execution-buttons">
+                            <button id="stepBtn" class="btn btn-primary">
+                                <i class="fas fa-step-forward"></i> Passo a Passo
+                            </button>
+                            <button id="runBtn" class="btn btn-success">
+                                <i class="fas fa-play"></i> Executar
+                            </button>
+                            <button id="pauseBtn" class="btn btn-warning" disabled>
+                                <i class="fas fa-pause"></i> Pausar
+                            </button>
+                            <button id="resetBtn" class="btn btn-secondary">
+                                <i class="fas fa-undo"></i> Resetar
+                            </button>
+                            <button id="randomStartBtn" class="btn btn-info">
+                                <i class="fas fa-random"></i> Aleatório
+                            </button>
+                        </div>
+                        
+                        <div class="algorithm-selector">
+                            <label for="algorithmType">
+                                <i class="fas fa-project-diagram"></i> Tipo de Gradiente:
+                            </label>
+                            <select id="algorithmType">
+                                <option value="batch">Batch Gradient Descent</option>
+                                <option value="stochastic">Stochastic Gradient Descent</option>
+                                <option value="miniBatch">Mini-batch Gradient Descent</option>
+                                <option value="momentum">Gradient Descent com Momentum</option>
+                                <option value="adam">Adam Optimizer</option>
+                                <option value="adagrad">Adagrad</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-chart-bar"></i> Estatísticas e Métricas</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Iteração Atual:</span>
+                                <span id="currentIteration" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Valor da Função:</span>
+                                <span id="currentValue" class="stat-value">0.000</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Gradiente (Norma):</span>
+                                <span id="gradientNorm" class="stat-value">0.000</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Tempo Execução:</span>
+                                <span id="executionTime" class="stat-value">0ms</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Mínimo Encontrado:</span>
+                                <span id="minimumFound" class="stat-value">Não</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Status:</span>
+                                <span id="algorithmStatus" class="stat-value">Pronto</span>
+                            </div>
+                        </div>
+                        
+                        <div class="convergence-chart">
+                            <h4><i class="fas fa-line-chart"></i> Convergência</h4>
+                            <div id="convergencePlot" class="small-plot"></div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-eye"></i> Visualização</h3>
+                        <div class="visualization-controls">
+                            <div class="checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="showTrajectory" checked>
+                                    <i class="fas fa-road"></i> Mostrar Trajetória
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="showGradientVectors" checked>
+                                    <i class="fas fa-arrows-alt"></i> Vetores Gradiente
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="showHeatmap" checked>
+                                    <i class="fas fa-fire"></i> Mapa de Calor
+                                </label>
+                                <label>
+                                    <input type="checkbox" id="animateSteps">
+                                    <i class="fas fa-play"></i> Animar Passos
+                                </label>
+                            </div>
+                            
+                            <div class="slider-control">
+                                <label for="animationSpeed">
+                                    <i class="fas fa-tachometer-alt"></i> Velocidade Animação:
+                                </label>
+                                <input type="range" id="animationSpeed" min="1" max="100" value="50">
+                                <span id="animationSpeedValue" class="value-display">50</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="legend">
+                        <h3><i class="fas fa-palette"></i> Legenda</h3>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #f72585;"></div>
+                                <span>Ponto Inicial</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #4ade80;"></div>
+                                <span>Trajetória</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #4cc9f0;"></div>
+                                <span>Ponto Atual</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #ff9100;"></div>
+                                <span>Mínimo Global</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #7209b7;"></div>
+                                <span>Vetor Gradiente</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: linear-gradient(to right, #0000ff, #00ff00, #ffff00, #ff0000);"></div>
+                                <span>Mapa de Calor (Valor)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="navigation">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Graham Scan
+                        </a>
+                        <a href="{{ url_for('trees') }}" class="btn btn-secondary">
+                            <i class="fas fa-tree"></i> Árvores
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Gradiente Descendente - Visualização interativa de algoritmos de otimização | Criado para fins educacionais</p>
+            <p>Algoritmos: Batch GD, Stochastic GD, Momentum, Adam, Adagrad | Implementação em JavaScript com Plotly</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/gradient.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/gradient-viz.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listas e Pilhas - Visualização</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/list_stack.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-layer-group"></i> Listas e Pilhas - Visualização</h1>
+            <p class="subtitle">Visualize como funcionam as estruturas de dados Lista (Array) e Pilha (Stack)</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="structureType">Estrutura de Dados:</label>
+                    <select id="structureType">
+                        <option value="list">Lista (Array)</option>
+                        <option value="stack">Pilha (Stack)</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="operationSpeed">Velocidade das Operações:</label>
+                    <input type="range" id="operationSpeed" min="1" max="40" value="20">
+                    <span id="speedValue">Médio</span>
+                </div>
+                
+                <div class="control-group" id="listSizeControl">
+                    <label for="listSize">Tamanho da Lista:</label>
+                    <input type="range" id="listSize" min="3" max="15" value="7">
+                    <span id="listSizeValue">7</span>
+                </div>
+                
+                <div class="control-group" id="stackSizeControl">
+                    <label for="stackSize">Capacidade da Pilha:</label>
+                    <input type="range" id="stackSize" min="3" max="10" value="5">
+                    <span id="stackSizeValue">5</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="elementValue">Valor do Elemento:</label>
+                    <input type="text" id="elementValue" value="" placeholder="Digite um valor...">
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Gerar Aleatório
+                    </button>
+                    <button id="clearBtn" class="btn btn-secondary">
+                        <i class="fas fa-trash"></i> Limpar
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> Listas vs Pilhas</h3>
+                    
+                    <p><strong>Lista (Array):</strong></p>
+                    <ul>
+                        <li><strong>Acesso Aleatório</strong>: Pode acessar qualquer elemento pelo índice</li>
+                        <li><strong>Tamanho Dinâmico</strong>: Pode crescer ou diminuir</li>
+                        <li><strong>Inserção/Remoção</strong>: Em qualquer posição (custo O(n) no pior caso)</li>
+                        <li><strong>Operações Comuns</strong>: Get, Set, Insert, Remove, Search</li>
+                    </ul>
+                    
+                    <p><strong>Pilha (Stack):</strong></p>
+                    <ul>
+                        <li><strong>LIFO</strong>: Last In, First Out (Último a entrar, primeiro a sair)</li>
+                        <li><strong>Acesso Restrito</strong>: Só pode acessar o topo</li>
+                        <li><strong>Operações Básicas</strong>: Push (empilhar), Pop (desempilhar), Peek (ver topo)</li>
+                        <li><strong>Aplicações</strong>: Undo/Redo, Chamadas de função, Navegação</li>
+                    </ul>
+                </div>
+                
+                <div class="data-structure-properties">
+                    <h4><i class="fas fa-check-circle"></i> Propriedades</h4>
+                    <ul>
+                        <li><strong>Complexidade Temporal:</strong></li>
+                        <li>Lista: Acesso O(1), Inserção/Remoção O(n) no pior caso</li>
+                        <li>Pilha: Push O(1), Pop O(1), Peek O(1)</li>
+                        <li><strong>Complexidade Espacial:</strong> O(n) para ambas</li>
+                        <li><strong>Uso de Memória:</strong> Contígua para ambas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="structure-selection">
+                    <button class="structure-tab active" data-structure="list">
+                        <i class="fas fa-list"></i> Lista
+                    </button>
+                    <button class="structure-tab" data-structure="stack">
+                        <i class="fas fa-layer-group"></i> Pilha
+                    </button>
+                </div>
+                
+                <div class="visualization-area">
+                    <div class="list-visualization active">
+                        <h3><i class="fas fa-list-ol"></i> Lista (Array)</h3>
+                        <div class="list-container" id="listContainer">
+                            <!-- Elementos da lista serão inseridos aqui -->
+                        </div>
+                        <div class="list-connections" id="listConnections">
+                            <!-- Conexões e ponteiros -->
+                        </div>
+                    </div>
+                    
+                    <div class="stack-visualization">
+                        <h3><i class="fas fa-arrow-up"></i> Pilha (Stack) - LIFO</h3>
+                        <div class="stack-container" id="stackContainer">
+                            <!-- Elementos da pilha serão inseridos aqui -->
+                            <div class="stack-base"></div>
+                        </div>
+                        <div class="stack-pointer" id="stackPointer">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>Topo</span>
+                        </div>
+                        <div class="stack-info" id="stackInfo">
+                            <span>Base</span>
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="operations-grid">
+                    <h4><i class="fas fa-cogs"></i> Operações</h4>
+                    <div class="operations-buttons" id="listOperations">
+                        <!-- Operações de lista -->
+                        <button class="operation-btn" data-op="insertStart">
+                            <i class="fas fa-plus-circle"></i> Inserir Início
+                        </button>
+                        <button class="operation-btn" data-op="insertEnd">
+                            <i class="fas fa-plus-square"></i> Inserir Fim
+                        </button>
+                        <button class="operation-btn" data-op="insertAt">
+                            <i class="fas fa-plus"></i> Inserir em Posição
+                        </button>
+                        <button class="operation-btn" data-op="removeStart">
+                            <i class="fas fa-minus-circle"></i> Remover Início
+                        </button>
+                        <button class="operation-btn" data-op="removeEnd">
+                            <i class="fas fa-minus-square"></i> Remover Fim
+                        </button>
+                        <button class="operation-btn" data-op="removeAt">
+                            <i class="fas fa-minus"></i> Remover em Posição
+                        </button>
+                        <button class="operation-btn" data-op="search">
+                            <i class="fas fa-search"></i> Buscar Valor
+                        </button>
+                        <button class="operation-btn" data-op="update">
+                            <i class="fas fa-edit"></i> Atualizar Valor
+                        </button>
+                    </div>
+                    <div class="operations-buttons" id="stackOperations" style="display: none;">
+                        <!-- Operações de pilha -->
+                        <button class="operation-btn" data-op="push">
+                            <i class="fas fa-arrow-up"></i> Push (Empilhar)
+                        </button>
+                        <button class="operation-btn" data-op="pop">
+                            <i class="fas fa-arrow-down"></i> Pop (Desempilhar)
+                        </button>
+                        <button class="operation-btn" data-op="peek">
+                            <i class="fas fa-eye"></i> Peek (Ver Topo)
+                        </button>
+                        <button class="operation-btn" data-op="isFull">
+                            <i class="fas fa-check"></i> Está Cheia?
+                        </button>
+                        <button class="operation-btn" data-op="isEmpty">
+                            <i class="fas fa-times"></i> Está Vazia?
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="current-operation">
+                    <h4><i class="fas fa-cogs"></i> Operação Atual</h4>
+                    <div class="operation-details" id="operationDetails">
+                        <p>Selecione uma operação para visualizar.</p>
+                    </div>
+                    
+                    <div class="structure-info">
+                        <div class="info-item">
+                            <span class="info-label">Tamanho:</span>
+                            <span id="currentSize" class="info-value">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Capacidade:</span>
+                            <span id="currentCapacity" class="info-value">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Índice/Topo:</span>
+                            <span id="currentIndex" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Valor:</span>
+                            <span id="currentValue" class="info-value">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Operações:</span>
+                        <span id="operationCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Elementos:</span>
+                        <span id="elementCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Acessos:</span>
+                        <span id="accessCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Pronto</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box list-normal"></div>
+                        <span>Lista: Normal</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box list-active"></div>
+                        <span>Lista: Ativo</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box list-highlight"></div>
+                        <span>Lista: Destaque</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box list-next"></div>
+                        <span>Lista: Próximo</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box list-previous"></div>
+                        <span>Lista: Anterior</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box stack-normal"></div>
+                        <span>Pilha: Normal</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box stack-top"></div>
+                        <span>Pilha: Topo</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box stack-push"></div>
+                        <span>Pilha: Push</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box stack-pop"></div>
+                        <span>Pilha: Pop</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/list_stack.js') }}"></script>
+</body>
+</html>

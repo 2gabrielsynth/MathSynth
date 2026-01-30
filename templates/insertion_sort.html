@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insertion Sort Visualization</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/insertion_sort.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-arrow-down-wide-short"></i> Insertion Sort Visualization</h1>
+            <p class="subtitle">Visualize how the Insertion Sort algorithm builds the sorted array one element at a time</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="arraySize">Array Size:</label>
+                    <input type="range" id="arraySize" min="5" max="30" value="12">
+                    <span id="sizeValue">12</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Animation Speed:</label>
+                    <input type="range" id="speed" min="1" max="40" value="15">
+                    <span id="speedValue">Medium</span>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Generate New Array
+                    </button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Start Sorting
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> How Insertion Sort Works</h3>
+                    <p>Insertion Sort builds the final sorted array one item at a time. It is much less efficient on large lists than more advanced algorithms.</p>
+                    <p><strong>Steps:</strong></p>
+                    <ol>
+                        <li>Start with the second element (index 1)</li>
+                        <li>Compare it with elements in the sorted portion (to its left)</li>
+                        <li>Shift larger elements one position to the right</li>
+                        <li>Insert the current element in its correct position</li>
+                        <li>Repeat for all elements</li>
+                    </ol>
+                    <p><strong>Time Complexity:</strong></p>
+                    <ul>
+                        <li>Best case: O(n) - when array is already sorted</li>
+                        <li>Average/Worst case: O(n²)</li>
+                    </ul>
+                    <p><strong>Space Complexity:</strong> O(1)</p>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="array-container" id="arrayContainer"></div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Comparisons:</span>
+                        <span id="comparisonCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Shifts:</span>
+                        <span id="shiftCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Insertions:</span>
+                        <span id="insertionCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Current Index:</span>
+                        <span id="currentIndex" class="status-value">-</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Ready</span>
+                    </div>
+                </div>
+                
+                <div class="current-element">
+                    <div class="element-info">
+                        <span class="element-label">Current Element:</span>
+                        <span id="currentElementValue" class="element-value">-</span>
+                        <span class="element-label">at index:</span>
+                        <span id="currentElementIndex" class="element-value">-</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box sorted"></div>
+                        <span>Sorted</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box unsorted"></div>
+                        <span>Unsorted</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box current"></div>
+                        <span>Current Element</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box comparing"></div>
+                        <span>Comparing</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box shifting"></div>
+                        <span>Shifting</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/insertion_sort.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heap Sort - Visualização</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/heap_sort.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-tree"></i> Heap Sort - Visualização</h1>
+            <p class="subtitle">Visualize como o algoritmo Heap Sort funciona usando a estrutura de dados Heap (Árvore Binária)</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="arraySize">Tamanho do Array:</label>
+                    <input type="range" id="arraySize" min="5" max="15" value="10">
+                    <span id="sizeValue">10</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Velocidade:</label>
+                    <input type="range" id="speed" min="1" max="40" value="15">
+                    <span id="speedValue">Médio</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="heapType">Tipo de Heap:</label>
+                    <select id="heapType">
+                        <option value="max">Max-Heap (Padrão)</option>
+                        <option value="min">Min-Heap</option>
+                    </select>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Novo Array
+                    </button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Iniciar
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> Como o Heap Sort Funciona</h3>
+                    <p>O Heap Sort é um algoritmo de ordenação baseado na estrutura de dados Heap (Árvore Binária).</p>
+                    <p><strong>Passos:</strong></p>
+                    <ol>
+                        <li><strong>Construir um Heap</strong>: Transformar o array em um heap (max-heap para ordenação crescente)</li>
+                        <li><strong>Extrair máximo</strong>: Trocar o elemento raiz (maior) com o último elemento</li>
+                        <li><strong>Re-heapify</strong>: Reorganizar o heap para manter a propriedade heap</li>
+                        <li><strong>Repetir</strong>: Repetir os passos 2-3 até que o heap tenha tamanho 1</li>
+                    </ol>
+                    <p><strong>Complexidade Temporal:</strong></p>
+                    <ul>
+                        <li>Construir heap: O(n)</li>
+                        <li>Ordenar: O(n log n)</li>
+                        <li>Total: O(n log n)</li>
+                    </ul>
+                    <p><strong>Complexidade Espacial:</strong> O(1) (in-place)</p>
+                    <p><strong>Estável:</strong> Não</p>
+                    <p><strong>In-place:</strong> Sim</p>
+                </div>
+                
+                <div class="heap-properties">
+                    <h4><i class="fas fa-check-circle"></i> Propriedades do Heap</h4>
+                    <ul>
+                        <li><strong>Árvore Binária Completa</strong>: Todos os níveis estão completamente preenchidos</li>
+                        <li><strong>Propriedade Heap</strong>: Para max-heap: pai ≥ filhos; para min-heap: pai ≤ filhos</li>
+                        <li><strong>Representação como Array</strong>: Para índice i:
+                            <ul>
+                                <li>Pai: ⌊(i-1)/2⌋</li>
+                                <li>Filho esquerdo: 2i + 1</li>
+                                <li>Filho direito: 2i + 2</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="visualization-area">
+                    <div class="array-visualization">
+                        <h3><i class="fas fa-list-ol"></i> Array</h3>
+                        <div class="array-container" id="arrayContainer"></div>
+                    </div>
+                    
+                    <div class="heap-tree">
+                        <h3><i class="fas fa-project-diagram"></i> Representação do Heap como Árvore</h3>
+                        <div class="tree-container" id="treeContainer">
+                            <div class="tree-message">
+                                <i class="fas fa-tree"></i>
+                                <p>Clique em "Iniciar" para visualizar o Heap</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="current-operation">
+                    <h4><i class="fas fa-cogs"></i> Operação Atual</h4>
+                    <div class="operation-details" id="operationDetails">
+                        <p>Aguardando início...</p>
+                    </div>
+                    
+                    <div class="node-info">
+                        <div class="info-item">
+                            <span class="info-label">Nó Atual:</span>
+                            <span id="currentNode" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Pai:</span>
+                            <span id="parentNode" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Filho Esquerdo:</span>
+                            <span id="leftChild" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Filho Direito:</span>
+                            <span id="rightChild" class="info-value">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Comparações:</span>
+                        <span id="comparisonCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Trocas:</span>
+                        <span id="swapCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Extrações:</span>
+                        <span id="extractionCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Heap Size:</span>
+                        <span id="heapSize" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Pronto</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box unsorted"></div>
+                        <span>Não Ordenado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box heap"></div>
+                        <span>No Heap</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box heapified"></div>
+                        <span>Heapificado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box comparing"></div>
+                        <span>Comparando</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box swapping"></div>
+                        <span>Trocando</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box sorted"></div>
+                        <span>Ordenado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box root"></div>
+                        <span>Raiz (Máximo)</span>
+                    </div>
+                </div>
+                
+                <div class="heap-representation">
+                    <h4><i class="fas fa-sitemap"></i> Relação Array ↔ Árvore</h4>
+                    <div class="representation-info">
+                        <p>Índice no array → Posição na árvore:</p>
+                        <div class="index-mapping">
+                            <div class="mapping-item">
+                                <span class="array-index">0</span>
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="tree-position">Raiz</span>
+                            </div>
+                            <div class="mapping-item">
+                                <span class="array-index">1, 2</span>
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="tree-position">Filhos do 0</span>
+                            </div>
+                            <div class="mapping-item">
+                                <span class="array-index">3, 4</span>
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="tree-position">Filhos do 1</span>
+                            </div>
+                            <div class="mapping-item">
+                                <span class="array-index">5, 6</span>
+                                <i class="fas fa-arrow-right"></i>
+                                <span class="tree-position">Filhos do 2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/heap_sort.js') }}"></script>
+</body>
+</html>

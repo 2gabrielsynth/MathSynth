@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merge Sort - Visualização</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/merge_sort.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-code-branch"></i> Merge Sort - Visualização</h1>
+            <p class="subtitle">Visualize como o algoritmo Merge Sort funciona usando a técnica "Dividir para Conquistar"</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="arraySize">Tamanho do Array:</label>
+                    <input type="range" id="arraySize" min="8" max="32" value="16">
+                    <span id="sizeValue">16</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Velocidade:</label>
+                    <input type="range" id="speed" min="1" max="40" value="15">
+                    <span id="speedValue">Médio</span>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Novo Array
+                    </button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Iniciar
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button id="stepBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-step-forward"></i> Passo
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> Como o Merge Sort Funciona</h3>
+                    <p>O Merge Sort é um algoritmo de ordenação que usa a técnica "Dividir para Conquistar".</p>
+                    <p><strong>Passos:</strong></p>
+                    <ol>
+                        <li><strong>Dividir</strong>: Divide o array pela metade recursivamente</li>
+                        <li><strong>Conquistar</strong>: Ordena cada metade recursivamente</li>
+                        <li><strong>Combinar</strong>: Junta as metades ordenadas em um único array ordenado</li>
+                    </ol>
+                    <p><strong>Complexidade Temporal:</strong></p>
+                    <ul>
+                        <li>Melhor caso: O(n log n)</li>
+                        <li>Caso médio: O(n log n)</li>
+                        <li>Pior caso: O(n log n)</li>
+                    </ul>
+                    <p><strong>Complexidade Espacial:</strong> O(n)</p>
+                    <p><strong>Estável:</strong> Sim</p>
+                </div>
+                
+                <div class="recursion-info">
+                    <h4><i class="fas fa-sitemap"></i> Informações de Recursão</h4>
+                    <div class="recursion-stats">
+                        <div class="stat">
+                            <span class="stat-label">Profundidade:</span>
+                            <span id="depthValue" class="stat-value">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Chamadas:</span>
+                            <span id="callsValue" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="visualization-area">
+                    <div class="tree-container" id="treeContainer">
+                        <div class="tree-info">
+                            <h4><i class="fas fa-sitemap"></i> Informações da Recursão</h4>
+                            <div class="tree-stats">
+                                <div class="tree-stat">
+                                    <span class="tree-label">Chamadas Recursivas:</span>
+                                    <span id="recursionCalls" class="tree-value">0</span>
+                                </div>
+                                <div class="tree-stat">
+                                    <span class="tree-label">Profundidade Máxima:</span>
+                                    <span id="maxDepth" class="tree-value">0</span>
+                                </div>
+                                <div class="tree-stat">
+                                    <span class="tree-label">Lado Atual:</span>
+                                    <span id="currentSide" class="tree-value">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="array-display" id="arrayDisplay">
+                        <div class="current-operation">
+                            <h3><i class="fas fa-cogs"></i> Operação Atual</h3>
+                            <div class="operation-details" id="operationDetails">
+                                <p>Aguardando início...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="comparison-area" id="comparisonArea">
+                            <div class="left-array" id="leftArray">
+                                <h4>Array Esquerdo</h4>
+                                <div class="array-elements"></div>
+                            </div>
+                            <div class="merge-animation" id="mergeAnimation">
+                                <i class="fas fa-arrows-alt-h"></i>
+                            </div>
+                            <div class="right-array" id="rightArray">
+                                <h4>Array Direito</h4>
+                                <div class="array-elements"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="result-array" id="resultArray">
+                            <h4>Resultado da Fusão</h4>
+                            <div class="array-elements"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Comparações:</span>
+                        <span id="comparisonCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Fusões:</span>
+                        <span id="mergeCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Divisões:</span>
+                        <span id="splitCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Pronto</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box unsorted"></div>
+                        <span>Não Ordenado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box being-sorted"></div>
+                        <span>Sendo Ordenado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box sorted"></div>
+                        <span>Ordenado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box comparing"></div>
+                        <span>Comparando</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box merged"></div>
+                        <span>Fundido</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box pivot"></div>
+                        <span>Ponto de Divisão</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/merge_sort.js') }}"></script>
+</body>
+</html>

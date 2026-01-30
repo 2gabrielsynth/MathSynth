@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritmos de Grafos - Visualização Interativa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/graphs.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="terminal-effect"></div>
+    
+    <div class="container">
+        <header>
+            <h1 class="glitch"><i class="fas fa-project-diagram"></i> ALGORITMOS DE GRAFOS</h1>
+            <p class="subtitle">Visualização interativa de BFS, DFS, Dijkstra e A*</p>
+        </header>
+
+        <main>
+            <div class="main-grid">
+                <!-- Visualização do Grafo -->
+                <div class="graph-section" data-label="GRAPH_VISUALIZATION">
+                    <div class="graph-header">
+                        <h2><i class="fas fa-network-wired"></i> Visualização do Grafo</h2>
+                        <div class="graph-controls">
+                            <button id="generateGraphBtn" class="btn btn-small">
+                                <i class="fas fa-redo"></i> Gerar Novo
+                            </button>
+                            <button id="clearGraphBtn" class="btn btn-small">
+                                <i class="fas fa-trash"></i> Limpar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="graph-container">
+                        <canvas id="graphCanvas"></canvas>
+                        <div class="graph-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Nós:</span>
+                                <span id="nodeCount" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Arestas:</span>
+                                <span id="edgeCount" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Peso Total:</span>
+                                <span id="totalWeight" class="stat-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="node-editor" data-label="NODE_EDITOR">
+                        <h3><i class="fas fa-edit"></i> Editor de Nós</h3>
+                        <div class="editor-controls">
+                            <div class="editor-mode">
+                                <button id="addNodeMode" class="btn btn-mode active">
+                                    <i class="fas fa-plus-circle"></i> Adicionar Nó
+                                </button>
+                                <button id="addEdgeMode" class="btn btn-mode">
+                                    <i class="fas fa-link"></i> Adicionar Aresta
+                                </button>
+                                <button id="moveNodeMode" class="btn btn-mode">
+                                    <i class="fas fa-arrows-alt"></i> Mover Nó
+                                </button>
+                                <button id="deleteMode" class="btn btn-mode">
+                                    <i class="fas fa-trash"></i> Remover
+                                </button>
+                            </div>
+                            
+                            <div class="node-properties">
+                                <div class="property-input">
+                                    <label for="nodeLabel">
+                                        <i class="fas fa-tag"></i> Rótulo:
+                                    </label>
+                                    <input type="text" id="nodeLabel" maxlength="2" placeholder="A">
+                                </div>
+                                <div class="property-input">
+                                    <label for="nodeWeight">
+                                        <i class="fas fa-weight-hanging"></i> Peso (Heurística):
+                                    </label>
+                                    <input type="number" id="nodeWeight" min="0" max="100" value="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controles e Algoritmos -->
+                <div class="control-section" data-label="CONTROL_PANEL">
+                    <div class="algorithm-selector">
+                        <h2><i class="fas fa-cogs"></i> Seletor de Algoritmo</h2>
+                        <div class="algorithm-buttons">
+                            <button id="bfsBtn" class="btn-algorithm active" data-algorithm="bfs">
+                                <i class="fas fa-expand-arrows-alt"></i> BFS
+                                <span class="algorithm-desc">Busca em Largura</span>
+                            </button>
+                            <button id="dfsBtn" class="btn-algorithm" data-algorithm="dfs">
+                                <i class="fas fa-long-arrow-alt-down"></i> DFS
+                                <span class="algorithm-desc">Busca em Profundidade</span>
+                            </button>
+                            <button id="dijkstraBtn" class="btn-algorithm" data-algorithm="dijkstra">
+                                <i class="fas fa-route"></i> Dijkstra
+                                <span class="algorithm-desc">Menor Caminho</span>
+                            </button>
+                            <button id="astarBtn" class="btn-algorithm" data-algorithm="astar">
+                                <i class="fas fa-bullseye"></i> A*
+                                <span class="algorithm-desc">Busca Heurística</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="execution-controls">
+                        <h3><i class="fas fa-play-circle"></i> Controles de Execução</h3>
+                        <div class="execution-buttons">
+                            <button id="startBtn" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Iniciar
+                            </button>
+                            <button id="pauseBtn" class="btn btn-warning" disabled>
+                                <i class="fas fa-pause"></i> Pausar
+                            </button>
+                            <button id="stepBtn" class="btn btn-info">
+                                <i class="fas fa-step-forward"></i> Passo
+                            </button>
+                            <button id="resetBtn" class="btn btn-secondary">
+                                <i class="fas fa-undo"></i> Resetar
+                            </button>
+                        </div>
+                        
+                        <div class="speed-control">
+                            <label for="animationSpeed">
+                                <i class="fas fa-tachometer-alt"></i> Velocidade da Animação:
+                            </label>
+                            <input type="range" id="animationSpeed" min="1" max="10" value="5">
+                            <span id="speedValue">5</span>
+                        </div>
+                    </div>
+
+                    <div class="algorithm-params">
+                        <h3><i class="fas fa-sliders-h"></i> Parâmetros do Algoritmo</h3>
+                        
+                        <div class="param-group" id="startNodeGroup">
+                            <label for="startNode">
+                                <i class="fas fa-play"></i> Nó Inicial:
+                            </label>
+                            <select id="startNode">
+                                <option value="">Selecione um nó</option>
+                            </select>
+                        </div>
+                        
+                        <div class="param-group" id="targetNodeGroup">
+                            <label for="targetNode">
+                                <i class="fas fa-bullseye"></i> Nó Destino:
+                            </label>
+                            <select id="targetNode">
+                                <option value="">Selecione um nó</option>
+                            </select>
+                        </div>
+                        
+                        <div class="param-group" id="weightedToggle">
+                            <label>
+                                <input type="checkbox" id="weightedGraph" checked>
+                                <i class="fas fa-weight-hanging"></i> Grafo Ponderado
+                            </label>
+                        </div>
+                        
+                        <div class="param-group" id="directedToggle">
+                            <label>
+                                <input type="checkbox" id="directedGraph">
+                                <i class="fas fa-arrow-right"></i> Grafo Direcionado
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="algorithm-info" data-label="ALGORITHM_INFO">
+                        <h3><i class="fas fa-info-circle"></i> Informações do Algoritmo</h3>
+                        <div id="algorithmDescription" class="info-content">
+                            <p>Selecione um algoritmo para ver suas informações.</p>
+                        </div>
+                        
+                        <div class="complexity-stats">
+                            <h4><i class="fas fa-chart-line"></i> Complexidade</h4>
+                            <div class="complexity-grid">
+                                <div class="complexity-item">
+                                    <span class="complexity-label">Tempo:</span>
+                                    <span id="timeComplexity" class="complexity-value">-</span>
+                                </div>
+                                <div class="complexity-item">
+                                    <span class="complexity-label">Espaço:</span>
+                                    <span id="spaceComplexity" class="complexity-value">-</span>
+                                </div>
+                                <div class="complexity-item">
+                                    <span class="complexity-label">Ótimo:</span>
+                                    <span id="optimality" class="complexity-value">-</span>
+                                </div>
+                                <div class="complexity-item">
+                                    <span class="complexity-label">Completo:</span>
+                                    <span id="completeness" class="complexity-value">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Painel de Resultados e Logs -->
+                <div class="results-section" data-label="RESULTS_PANEL">
+                    <div class="results-panel">
+                        <h2><i class="fas fa-chart-bar"></i> Resultados da Execução</h2>
+                        
+                        <div class="execution-stats">
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-footsteps"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <span class="stat-title">Passos Executados</span>
+                                        <span id="stepsCount" class="stat-number">0</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-route"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <span class="stat-title">Custo do Caminho</span>
+                                        <span id="pathCost" class="stat-number">0</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <span class="stat-title">Nós Visitados</span>
+                                        <span id="visitedCount" class="stat-number">0</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <span class="stat-title">Tempo (ms)</span>
+                                        <span id="executionTime" class="stat-number">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="path-display">
+                            <h3><i class="fas fa-road"></i> Caminho Encontrado</h3>
+                            <div id="pathResult" class="path-result">
+                                <p>Nenhum caminho encontrado ainda.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="queue-display" id="queueDisplay">
+                            <h3><i class="fas fa-list-ol"></i> Fila/Pilha Atual</h3>
+                            <div id="queueContent" class="queue-content">
+                                <p>Fila vazia</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="log-panel" data-label="EXECUTION_LOG">
+                        <h3><i class="fas fa-terminal"></i> Log de Execução</h3>
+                        <div id="executionLog" class="log-content">
+                            <div class="log-entry">Sistema inicializado. Pronto para executar algoritmos.</div>
+                        </div>
+                        <div class="log-controls">
+                            <button id="clearLogBtn" class="btn btn-small">
+                                <i class="fas fa-trash"></i> Limpar Log
+                            </button>
+                            <button id="exportLogBtn" class="btn btn-small">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel de Informações Educacionais -->
+            <div class="education-panel">
+                <div class="info-box" data-label="BFS_INFO">
+                    <h3><i class="fas fa-expand-arrows-alt"></i> Busca em Largura (BFS)</h3>
+                    <p>Explora todos os vizinhos de um nó antes de seguir para os vizinhos dos vizinhos. Usa uma fila (FIFO).</p>
+                    <ul>
+                        <li><strong>Complexidade:</strong> O(V + E) no tempo e espaço</li>
+                        <li><strong>Uso:</strong> Menor caminho em grafos não ponderados</li>
+                        <li><strong>Ótimo:</strong> Sim, para grafos não ponderados</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box" data-label="DFS_INFO">
+                    <h3><i class="fas fa-long-arrow-alt-down"></i> Busca em Profundidade (DFS)</h3>
+                    <p>Explora o máximo possível em um ramo antes de retroceder. Usa uma pilha (LIFO).</p>
+                    <ul>
+                        <li><strong>Complexidade:</strong> O(V + E) no tempo, O(V) no espaço</li>
+                        <li><strong>Uso:</strong> Detecção de ciclos, ordenação topológica</li>
+                        <li><strong>Ótimo:</strong> Não</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box" data-label="DIJKSTRA_INFO">
+                    <h3><i class="fas fa-route"></i> Algoritmo de Dijkstra</h3>
+                    <p>Encontra o caminho mais curto de um nó para todos os outros em grafos com pesos não-negativos.</p>
+                    <ul>
+                        <li><strong>Complexidade:</strong> O((V + E) log V) com heap binário</li>
+                        <li><strong>Uso:</strong> Sistemas de roteamento, navegação</li>
+                        <li><strong>Ótimo:</strong> Sim, para pesos não-negativos</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box" data-label="ASTAR_INFO">
+                    <h3><i class="fas fa-bullseye"></i> Algoritmo A*</h3>
+                    <p>Combina custo real do caminho com heurística para encontrar o caminho mais eficiente.</p>
+                    <ul>
+                        <li><strong>Complexidade:</strong> O(b^d) no pior caso</li>
+                        <li><strong>Uso:</strong> Jogos, planejamento de movimento, IA</li>
+                        <li><strong>Ótimo:</strong> Sim, com heurística admissível</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Navegação -->
+            <div class="navigation-panel">
+                <a href="{{ url_for('fourier') }}" class="btn-nav">
+                    <i class="fas fa-wave-square"></i> Fourier Transform
+                </a>
+                <a href="{{ url_for('gradient') }}" class="btn-nav">
+                    <i class="fas fa-chart-line"></i> Gradient Descent
+                </a>
+                <button id="helpBtn" class="btn-nav">
+                    <i class="fas fa-question-circle"></i> Ajuda
+                </button>
+            </div>
+        </main>
+
+        <footer>
+            <p>Algoritmos de Grafos - Visualização Interativa | BFS, DFS, Dijkstra, A*</p>
+            <p class="footer-note">Aplicação educacional para estudo de algoritmos em grafos | Implementação em JavaScript com Canvas</p>
+        </footer>
+    </div>
+
+    <!-- Modal de Ajuda -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-question-circle"></i> Ajuda - Como Usar</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h3><i class="fas fa-mouse-pointer"></i> Interação com o Grafo</h3>
+                    <ul>
+                        <li><strong>Adicionar Nó:</strong> Clique em qualquer lugar do canvas</li>
+                        <li><strong>Adicionar Aresta:</strong> Selecione dois nós consecutivamente</li>
+                        <li><strong>Mover Nó:</strong> Arraste e solte o nó</li>
+                        <li><strong>Remover:</strong> Clique no elemento a ser removido</li>
+                        <li><strong>Editar Peso:</strong> Clique duas vezes na aresta para editar</li>
+                    </ul>
+                </div>
+                
+                <div class="help-section">
+                    <h3><i class="fas fa-cogs"></i> Execução de Algoritmos</h3>
+                    <ol>
+                        <li>Selecione um algoritmo (BFS, DFS, Dijkstra ou A*)</li>
+                        <li>Defina o nó inicial e destino (se aplicável)</li>
+                        <li>Clique em "Iniciar" para executar automaticamente</li>
+                        <li>Use "Passo" para execução controlada</li>
+                        <li>Acompanhe os resultados no painel à direita</li>
+                    </ol>
+                </div>
+                
+                <div class="help-section">
+                    <h3><i class="fas fa-palette"></i> Cores e Legenda</h3>
+                    <div class="legend-help">
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #00ff00;"></div>
+                            <span>Nó inicial</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #ff0000;"></div>
+                            <span>Nó destino</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #4cc9f0;"></div>
+                            <span>Nó visitado</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #7209b7;"></div>
+                            <span>Nó atual/explorando</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #4ade80;"></div>
+                            <span>Caminho encontrado</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #ff9100;"></div>
+                            <span>Aresta ativa</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/graphs.js') }}"></script>
+    
+    <!-- Efeitos Hacker -->
+    <script>
+        // Adiciona efeito de terminal
+        function addTerminalEffect() {
+            const terminal = document.createElement('div');
+            terminal.className = 'terminal-output';
+            terminal.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 350px;
+                background: rgba(0, 10, 0, 0.9);
+                border: 1px solid #00ff00;
+                padding: 15px;
+                font-family: 'Courier New', monospace;
+                font-size: 12px;
+                color: #00ff00;
+                z-index: 1000;
+                opacity: 0.8;
+                box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+                max-height: 250px;
+                overflow-y: auto;
+                line-height: 1.4;
+            `;
+            
+            document.body.appendChild(terminal);
+            
+            const messages = [
+                "INITIALIZING GRAPH ALGORITHMS VISUALIZER...",
+                "LOADING GRAPH MODULES...",
+                "CALIBRATING ALGORITHM ENGINES...",
+                "SYSTEM STATUS: ONLINE",
+                "READY FOR GRAPH OPERATIONS"
+            ];
+            
+            let messageIndex = 0;
+            let charIndex = 0;
+            let currentText = '';
+            
+            function typeMessage() {
+                if (messageIndex < messages.length) {
+                    if (charIndex < messages[messageIndex].length) {
+                        currentText += messages[messageIndex].charAt(charIndex);
+                        terminal.innerHTML = currentText + '<span style="color: #00ff00; animation: blink 1s infinite;">█</span>';
+                        charIndex++;
+                        setTimeout(typeMessage, 30);
+                    } else {
+                        currentText += '<br>';
+                        charIndex = 0;
+                        messageIndex++;
+                        setTimeout(typeMessage, 300);
+                    }
+                } else {
+                    setInterval(updateTerminalStats, 1000);
+                }
+            }
+            
+            typeMessage();
+        }
+        
+        function updateTerminalStats() {
+            const terminal = document.querySelector('.terminal-output');
+            if (!terminal) return;
+            
+            const nodeCount = document.getElementById('nodeCount')?.textContent || '0';
+            const edgeCount = document.getElementById('edgeCount')?.textContent || '0';
+            const stepsCount = document.getElementById('stepsCount')?.textContent || '0';
+            
+            const stats = [
+                `NODES: ${nodeCount}`,
+                `EDGES: ${edgeCount}`,
+                `STEPS: ${stepsCount}`,
+                `TIME: ${new Date().toLocaleTimeString()}`,
+                '>_'
+            ];
+            
+            terminal.innerHTML = stats.join('<br>');
+        }
+        
+        // Adiciona partículas
+        function createParticles() {
+            const container = document.createElement('div');
+            container.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+                overflow: hidden;
+            `;
+            
+            document.body.appendChild(container);
+            
+            // Cria partículas de dados (como em Matrix)
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'data-particle';
+                particle.style.cssText = `
+                    position: absolute;
+                    color: #00ff00;
+                    font-family: 'Courier New', monospace;
+                    font-size: ${Math.random() * 14 + 10}px;
+                    opacity: ${Math.random() * 0.4 + 0.1};
+                    text-shadow: 0 0 5px #00ff00;
+                    user-select: none;
+                `;
+                
+                // Caracteres binários/hexadecimais
+                const chars = '01ABCDEF0123456789';
+                particle.textContent = chars.charAt(Math.floor(Math.random() * chars.length));
+                
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                container.appendChild(particle);
+                animateDataParticle(particle);
+            }
+        }
+        
+        function animateDataParticle(particle) {
+            let y = parseFloat(particle.style.top);
+            const speed = Math.random() * 0.5 + 0.3;
+            
+            function fall() {
+                y += speed;
+                
+                if (y > 100) {
+                    y = -10;
+                    particle.style.left = `${Math.random() * 100}vw`;
+                    
+                    // Muda o caractere aleatoriamente
+                    const chars = '01ABCDEF0123456789';
+                    particle.textContent = chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                
+                particle.style.top = `${y}vh`;
+                requestAnimationFrame(fall);
+            }
+            
+            fall();
+        }
+        
+        // Modal de ajuda
+        function setupModal() {
+            const modal = document.getElementById('helpModal');
+            const helpBtn = document.getElementById('helpBtn');
+            const closeBtn = document.querySelector('.modal-close');
+            
+            helpBtn.addEventListener('click', () => {
+                modal.style.display = 'block';
+            });
+            
+            closeBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Efeito de glitch aleatório
+        function addGlitchEffects() {
+            setInterval(() => {
+                if (Math.random() > 0.97) { // 3% de chance de glitch
+                    document.querySelector('h1').classList.add('glitch-active');
+                    setTimeout(() => {
+                        document.querySelector('h1').classList.remove('glitch-active');
+                    }, 300);
+                }
+            }, 5000);
+        }
+        
+        // Inicializa todos os efeitos
+        document.addEventListener('DOMContentLoaded', function() {
+            addTerminalEffect();
+            createParticles();
+            setupModal();
+            addGlitchEffects();
+            
+            // Adiciona estilos CSS dinâmicos
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes blink {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0; }
+                }
+                
+                .glitch-active {
+                    animation: glitch-effect 0.3s;
+                }
+                
+                @keyframes glitch-effect {
+                    0% { transform: translate(0); }
+                    20% { transform: translate(-3px, 3px); text-shadow: 2px 0 #ff00ff; }
+                    40% { transform: translate(3px, -3px); text-shadow: -2px 0 #00ffff; }
+                    60% { transform: translate(-3px, 1px); }
+                    80% { transform: translate(3px, -1px); }
+                    100% { transform: translate(0); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Adiciona efeito de digitação nos logs
+            const logEntries = document.querySelectorAll('.log-entry');
+            logEntries.forEach((entry, index) => {
+                const originalText = entry.textContent;
+                entry.textContent = '';
+                
+                setTimeout(() => {
+                    typeText(entry, originalText);
+                }, 500 + index * 200);
+            });
+        });
+        
+        function typeText(element, text) {
+            let i = 0;
+            function typeChar() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeChar, 20);
+                }
+            }
+            typeChar();
+        }
+    </script>
+</body>
+</html>

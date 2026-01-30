@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Árvores de Busca Binária</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/trees.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🌳 ÁRVORES DE BUSCA BINÁRIA</h1>
+            <p class="subtitle">BST, AVL e Red-Black - Visualização Interativa de Estruturas de Dados</p>
+        </header>
+
+        <main class="main-content">
+            <div class="visualization-section">
+                <div class="canvas-container">
+                    <canvas id="treeCanvas"></canvas>
+                    <div class="canvas-info">
+                        <p><strong>Como usar:</strong> Insira valores • Clique em nós para focar • Use controles para operações</p>
+                    </div>
+                </div>
+                
+                <div class="tree-info">
+                    <h2><i class="fas fa-info-circle"></i> Tipos de Árvores</h2>
+                    <div class="tree-types">
+                        <div class="tree-type-card" data-type="bst">
+                            <h3><i class="fas fa-tree"></i> BST</h3>
+                            <p>Árvore de Busca Binária simples. Não balanceada.</p>
+                            <div class="complexity">
+                                <span>Busca: O(n) pior</span>
+                                <span>Inserção: O(n) pior</span>
+                            </div>
+                        </div>
+                        <div class="tree-type-card active" data-type="avl">
+                            <h3><i class="fas fa-balance-scale"></i> AVL</h3>
+                            <p>Árvore balanceada por rotações. Altura balanceada.</p>
+                            <div class="complexity">
+                                <span>Busca: O(log n)</span>
+                                <span>Inserção: O(log n)</span>
+                            </div>
+                        </div>
+                        <div class="tree-type-card" data-type="redblack">
+                            <h3><i class="fas fa-circle"></i> Red-Black</h3>
+                            <p>Árvore balanceada com cores. Menos rotações que AVL.</p>
+                            <div class="complexity">
+                                <span>Busca: O(log n)</span>
+                                <span>Inserção: O(log n)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="operations-info">
+                        <h3><i class="fas fa-cogs"></i> Operações Suportadas</h3>
+                        <div class="operations-grid">
+                            <div class="operation">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Inserção</span>
+                            </div>
+                            <div class="operation">
+                                <i class="fas fa-minus-circle"></i>
+                                <span>Remoção</span>
+                            </div>
+                            <div class="operation">
+                                <i class="fas fa-search"></i>
+                                <span>Busca</span>
+                            </div>
+                            <div class="operation">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Rotacionar</span>
+                            </div>
+                            <div class="operation">
+                                <i class="fas fa-sitemap"></i>
+                                <span>Traversal</span>
+                            </div>
+                            <div class="operation">
+                                <i class="fas fa-expand-alt"></i>
+                                <span>Balancear</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="algorithm-steps">
+                        <h3><i class="fas fa-list-ol"></i> Operação Atual</h3>
+                        <div id="operationSteps" class="steps-container">
+                            <p class="no-operation">Nenhuma operação em andamento</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="control-panel">
+                    <h2><i class="fas fa-gamepad"></i> Controles</h2>
+                    
+                    <div class="control-group">
+                        <h3><i class="fas fa-sliders-h"></i> Configurações</h3>
+                        <div class="slider-control">
+                            <label for="animationSpeed">
+                                <i class="fas fa-tachometer-alt"></i> Velocidade:
+                            </label>
+                            <input type="range" id="animationSpeed" min="1" max="100" value="50">
+                            <span id="speedValue" class="value-display">50</span>
+                        </div>
+                        
+                        <div class="slider-control">
+                            <label for="nodeSize">
+                                <i class="fas fa-circle"></i> Tamanho nó:
+                            </label>
+                            <input type="range" id="nodeSize" min="20" max="60" value="40">
+                            <span id="nodeSizeValue" class="value-display">40px</span>
+                        </div>
+                        
+                        <div class="checkbox-control">
+                            <label>
+                                <input type="checkbox" id="showValues" checked>
+                                <i class="fas fa-hashtag"></i> Mostrar valores
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showHeights" checked>
+                                <i class="fas fa-ruler-vertical"></i> Mostrar alturas
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showBalance" checked>
+                                <i class="fas fa-balance-scale"></i> Mostrar balanceamento
+                            </label>
+                            <label>
+                                <input type="checkbox" id="animateOperations">
+                                <i class="fas fa-play-circle"></i> Animar operações
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-edit"></i> Inserção/Remoção</h3>
+                        <div class="input-group">
+                            <input type="number" id="valueInput" placeholder="Valor (0-999)" min="0" max="999">
+                            <button id="insertBtn" class="btn btn-success">
+                                <i class="fas fa-plus"></i> Inserir
+                            </button>
+                            <button id="deleteBtn" class="btn btn-danger">
+                                <i class="fas fa-minus"></i> Remover
+                            </button>
+                        </div>
+                        
+                        <div class="button-grid">
+                            <button id="searchBtn" class="btn btn-info">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                            <button id="clearBtn" class="btn btn-warning">
+                                <i class="fas fa-trash"></i> Limpar
+                            </button>
+                            <button id="randomBtn" class="btn btn-secondary">
+                                <i class="fas fa-random"></i> Aleatório
+                            </button>
+                            <button id="balanceBtn" class="btn btn-primary">
+                                <i class="fas fa-sync-alt"></i> Balancear
+                            </button>
+                        </div>
+                        
+                        <div class="slider-control">
+                            <label for="randomCount">
+                                <i class="fas fa-list-ol"></i> Número de nós:
+                            </label>
+                            <input type="range" id="randomCount" min="5" max="30" value="15">
+                            <span id="randomCountValue" class="value-display">15</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-project-diagram"></i> Traversals</h3>
+                        <div class="button-grid">
+                            <button id="inorderBtn" class="btn btn-traversal">
+                                <i class="fas fa-arrow-right"></i> In-Order
+                            </button>
+                            <button id="preorderBtn" class="btn btn-traversal">
+                                <i class="fas fa-arrow-down"></i> Pre-Order
+                            </button>
+                            <button id="postorderBtn" class="btn btn-traversal">
+                                <i class="fas fa-arrow-up"></i> Post-Order
+                            </button>
+                            <button id="levelorderBtn" class="btn btn-traversal">
+                                <i class="fas fa-layer-group"></i> Level-Order
+                            </button>
+                        </div>
+                        
+                        <div class="traversal-result">
+                            <label>Resultado:</label>
+                            <div id="traversalResult" class="result-box"></div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-chart-line"></i> Estatísticas</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Nós:</span>
+                                <span id="nodeCount" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Altura:</span>
+                                <span id="treeHeight" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Balanceamento:</span>
+                                <span id="balanceFactor" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Rotações:</span>
+                                <span id="rotationCount" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Tipo:</span>
+                                <span id="treeType" class="stat-value">AVL</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Status:</span>
+                                <span id="treeStatus" class="stat-value">Balanceada</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="legend">
+                        <h3><i class="fas fa-palette"></i> Legenda</h3>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="color-box node-normal"></div>
+                                <span>Nó normal</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box node-root"></div>
+                                <span>Raiz</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box node-highlight"></div>
+                                <span>Nó selecionado</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box node-red"></div>
+                                <span>Red (Red-Black)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box node-black"></div>
+                                <span>Black (Red-Black)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box node-unbalanced"></div>
+                                <span>Desbalanceado</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="navigation">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Graham Scan
+                        </a>
+                        <a href="{{ url_for('delaunay') }}" class="btn btn-secondary">
+                            <i class="fas fa-project-diagram"></i> Delaunay
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Árvores de Busca Binária - Visualização interativa | BST, AVL e Red-Black Trees</p>
+            <p>Complexidades: BST O(n) pior caso | AVL/Red-Black O(log n) garantido</p>
+        </footer>
+    </div>
+
+    <!-- Modal para detalhes do nó -->
+    <div id="nodeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fas fa-info-circle"></i> Detalhes do Nó</h3>
+            <div id="nodeDetails" class="node-details">
+                <!-- Detalhes serão inseridos aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/trees.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/trees-viz.js') }}"></script>
+</body>
+</html>

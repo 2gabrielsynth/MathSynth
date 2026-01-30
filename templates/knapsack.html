@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problema da Mochila - Visualização</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/knapsack.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-shopping-bag"></i> Problema da Mochila - Visualização</h1>
+            <p class="subtitle">Maximize o valor dos itens na mochila sem exceder a capacidade de peso</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="itemCount">Número de Itens:</label>
+                    <input type="range" id="itemCount" min="3" max="10" value="5">
+                    <span id="itemCountValue">5</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="capacity">Capacidade da Mochila:</label>
+                    <input type="range" id="capacity" min="10" max="50" value="20">
+                    <span id="capacityValue">20 kg</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="algorithmSelect">Algoritmo:</label>
+                    <select id="algorithmSelect">
+                        <option value="dp">Programação Dinâmica (0/1)</option>
+                        <option value="greedy">Guloso (Fracionário)</option>
+                        <option value="backtracking">Backtracking</option>
+                        <option value="branch">Branch and Bound</option>
+                        <option value="bruteforce">Força Bruta</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Velocidade da Animação:</label>
+                    <input type="range" id="speed" min="1" max="40" value="20">
+                    <span id="speedValue">Médio</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="itemType">Tipo de Itens:</label>
+                    <select id="itemType">
+                        <option value="random">Aleatório</option>
+                        <option value="highvalue">Alto Valor</option>
+                        <option value="lowweight">Peso Baixo</option>
+                        <option value="balanced">Balanceado</option>
+                    </select>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Gerar Itens
+                    </button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Executar Algoritmo
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button id="stepBtn" class="btn btn-secondary">
+                        <i class="fas fa-step-forward"></i> Passo a Passo
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> O Problema da Mochila</h3>
+                    <p>Dado um conjunto de itens, cada um com peso e valor, determine quais itens incluir na mochila para maximizar o valor total sem exceder a capacidade de peso.</p>
+                    
+                    <p><strong>Formulação Matemática:</strong></p>
+                    <div style="text-align: center; margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <p style="font-family: 'Courier New', monospace; font-size: 1.1rem;">
+                            maximizar ∑ vᵢxᵢ
+                        </p>
+                        <p style="font-family: 'Courier New', monospace; font-size: 1.1rem;">
+                            sujeito a ∑ wᵢxᵢ ≤ W
+                        </p>
+                        <p style="font-size: 0.9rem; color: #a9a9a9; margin-top: 5px;">
+                            onde xᵢ ∈ {0,1} (0/1) ou xᵢ ∈ [0,1] (fracionário)
+                        </p>
+                    </div>
+                    
+                    <p><strong>Tipos de Problema:</strong></p>
+                    <ul>
+                        <li><strong>0/1 Knapsack:</strong> Cada item completo ou não incluído</li>
+                        <li><strong>Fractional Knapsack:</strong> Pode incluir frações de itens</li>
+                        <li><strong>Bounded/Unbounded:</strong> Número limitado ou ilimitado de cada item</li>
+                    </ul>
+                    
+                    <p><strong>Aplicações:</strong></p>
+                    <ul>
+                        <li>Otimização de investimentos</li>
+                        <li>Seleção de projetos</li>
+                        <li>Alocação de recursos</li>
+                        <li>Problemas de corte e empacotamento</li>
+                    </ul>
+                </div>
+                
+                <div class="knapsack-properties">
+                    <h4><i class="fas fa-check-circle"></i> Propriedades do Problema</h4>
+                    <ul>
+                        <li><strong>NP-Difícil:</strong> Versão 0/1 é NP-Difícil</li>
+                        <li><strong>Pseudo-polinomial:</strong> Solucionável em tempo pseudo-polinomial</li>
+                        <li><strong>Fracionário é P:</strong> Resolvido eficientemente por algoritmo guloso</li>
+                        <li><strong>Estrutura Ótima:</strong> Possui subestrutura ótima</li>
+                    </ul>
+                </div>
+                
+                <div class="complexity-info">
+                    <h4><i class="fas fa-chart-line"></i> Complexidade Computacional</h4>
+                    <div class="complexity-item">
+                        <span class="complexity-label">Força Bruta:</span>
+                        <span class="complexity-value">O(2ⁿ)</span>
+                    </div>
+                    <div class="complexity-item">
+                        <span class="complexity-label">Programação Dinâmica:</span>
+                        <span class="complexity-value">O(nW)</span>
+                    </div>
+                    <div class="complexity-item">
+                        <span class="complexity-label">Guloso (Fracionário):</span>
+                        <span class="complexity-value">O(n log n)</span>
+                    </div>
+                    <div class="complexity-item">
+                        <span class="complexity-label">Branch and Bound:</span>
+                        <span class="complexity-value">O(2ⁿ) no pior caso</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="visualization-area">
+                    <div class="knapsack-visualization">
+                        <h3><i class="fas fa-box-open"></i> Mochila e Itens</h3>
+                        <div class="knapsack-container">
+                            <div class="knapsack-bag" id="knapsackBag">
+                                <div class="items-container" id="itemsContainer">
+                                    <!-- Itens serão inseridos aqui -->
+                                </div>
+                            </div>
+                            <div class="capacity-indicator" id="capacityIndicator">
+                                <div>Capacidade: <span id="currentWeight">0</span>/<span id="maxCapacity">20</span> kg</div>
+                                <div class="capacity-bar">
+                                    <div class="capacity-fill" id="capacityFill"></div>
+                                </div>
+                                <div class="capacity-text">
+                                    <span>0%</span>
+                                    <span id="capacityPercent">0%</span>
+                                    <span>100%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="items-table-container">
+                            <table class="items-table" id="itemsTable">
+                                <!-- Tabela de itens será gerada aqui -->
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="algorithm-visualization">
+                        <h3><i class="fas fa-project-diagram"></i> Visualização do Algoritmo</h3>
+                        <div class="dp-table-container" id="dpTableContainer">
+                            <!-- Tabela de programação dinâmica será gerada aqui -->
+                        </div>
+                        <div class="decision-tree" id="decisionTree">
+                            <!-- Árvore de decisão será gerada aqui -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="current-operation">
+                    <h4><i class="fas fa-cogs"></i> Operação Atual</h4>
+                    <div class="operation-details" id="operationDetails">
+                        <p>Configure os itens e a capacidade, então escolha um algoritmo para começar.</p>
+                    </div>
+                    
+                    <div class="decision-info">
+                        <div class="info-item">
+                            <span class="info-label">Item Atual:</span>
+                            <span id="currentItem" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Valor:</span>
+                            <span id="currentValue" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Peso:</span>
+                            <span id="currentWeightInfo" class="info-value">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Densidade (V/P):</span>
+                            <span id="currentDensity" class="info-value">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Valor Total:</span>
+                        <span id="totalValue" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Peso Total:</span>
+                        <span id="totalWeight" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Itens na Mochila:</span>
+                        <span id="itemsInKnapsack" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Pronto</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-box value-high"></div>
+                        <span>Alto Valor (V/P ≥ 3)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box value-medium"></div>
+                        <span>Valor Médio (1 ≤ V/P < 3)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box value-low"></div>
+                        <span>Baixo Valor (V/P < 1)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box in-knapsack"></div>
+                        <span>Na Mochila</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box considering"></div>
+                        <span>Considerando</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box excluded"></div>
+                        <span>Excluído</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/knapsack.js') }}"></script>
+</body>
+</html>

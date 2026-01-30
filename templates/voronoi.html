@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagramas de Voronoi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/voronoi.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📐 DIAGRAMAS DE VORONOI</h1>
+            <p class="subtitle">Divisão do plano em regiões baseadas na proximidade a pontos</p>
+        </header>
+
+        <main class="main-content">
+            <div class="visualization-section">
+                <div class="canvas-container">
+                    <canvas id="voronoiCanvas"></canvas>
+                    <div class="canvas-info">
+                        <p><strong>Como usar:</strong> Clique para adicionar pontos • Arraste para mover • Ctrl+clique para área específica</p>
+                    </div>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h2>📋 Sobre Diagramas de Voronoi</h2>
+                    <div class="info-content">
+                        <p>Um diagrama de Voronoi divide um plano em regiões baseadas na distância a um conjunto específico de pontos.</p>
+                        
+                        <h3>Definição Matemática:</h3>
+                        <p>Dado um conjunto de pontos <em>S</em>, a região de Voronoi <em>V(pᵢ)</em> para um ponto <em>pᵢ ∈ S</em> é:</p>
+                        <p class="formula">V(pᵢ) = {x ∈ ℝ² | d(x, pᵢ) ≤ d(x, pⱼ) ∀ pⱼ ∈ S, j ≠ i}</p>
+                        
+                        <h3>Aplicações:</h3>
+                        <ul>
+                            <li>🛰️ Sistemas de posicionamento (células de torres)</li>
+                            <li>🎨 Arte generativa e designs</li>
+                            <li>🌍 Modelagem de territórios naturais</li>
+                            <li>⚕️ Planejamento urbano e saúde</li>
+                            <li>🎮 Geração procedural em jogos</li>
+                        </ul>
+                        
+                        <h3>Algoritmos Comuns:</h3>
+                        <ul>
+                            <li><strong>Fortune's Algorithm:</strong> O(n log n) - Mais eficiente</li>
+                            <li><strong>Incremental:</strong> Fácil implementação</li>
+                            <li><strong>Divisão e Conquista:</strong> Boa para paralelismo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div class="control-panel">
+                    <h2>🎮 Controles</h2>
+                    
+                    <div class="control-group">
+                        <h3>Pontos</h3>
+                        <div class="button-grid">
+                            <button id="addPointBtn" class="btn btn-primary">
+                                <span class="btn-icon">+</span> Adicionar Ponto
+                            </button>
+                            <button id="clearBtn" class="btn btn-danger">
+                                <span class="btn-icon">🗑</span> Limpar Tudo
+                            </button>
+                            <button id="randomBtn" class="btn btn-info">
+                                <span class="btn-icon">🎲</span> Aleatório
+                            </button>
+                            <button id="loadPresetBtn" class="btn btn-secondary">
+                                <span class="btn-icon">📁</span> Presets
+                            </button>
+                        </div>
+                        
+                        <div class="slider-control">
+                            <label for="pointCount">Número de pontos:</label>
+                            <input type="range" id="pointCount" min="3" max="50" value="10">
+                            <span id="pointCountValue" class="value-display">10</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>Visualização</h3>
+                        <div class="button-grid">
+                            <button id="toggleCellsBtn" class="btn btn-success active">
+                                <span class="btn-icon">🔲</span> Células
+                            </button>
+                            <button id="toggleEdgesBtn" class="btn btn-success active">
+                                <span class="btn-icon">📐</span> Arestas
+                            </button>
+                            <button id="togglePointsBtn" class="btn btn-success active">
+                                <span class="btn-icon">•</span> Pontos
+                            </button>
+                            <button id="toggleTriangulationBtn" class="btn btn-warning">
+                                <span class="btn-icon">△</span> Delaunay
+                            </button>
+                        </div>
+                        
+                        <div class="checkbox-control">
+                            <label>
+                                <input type="checkbox" id="showGrid" checked>
+                                Mostrar grade
+                            </label>
+                            <label>
+                                <input type="checkbox" id="showDistance" checked>
+                                Mostrar distâncias
+                            </label>
+                            <label>
+                                <input type="checkbox" id="animateColors">
+                                Cores animadas
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>Configurações</h3>
+                        <div class="slider-control">
+                            <label for="cellOpacity">Opacidade das células:</label>
+                            <input type="range" id="cellOpacity" min="10" max="100" value="40">
+                            <span id="opacityValue" class="value-display">40%</span>
+                        </div>
+                        
+                        <div class="slider-control">
+                            <label for="animationSpeed">Velocidade animação:</label>
+                            <input type="range" id="animationSpeed" min="1" max="100" value="30">
+                            <span id="speedValue" class="value-display">30</span>
+                        </div>
+                        
+                        <div class="algorithm-selector">
+                            <label for="algorithmSelect">Algoritmo:</label>
+                            <select id="algorithmSelect">
+                                <option value="incremental">Incremental (O(n²))</option>
+                                <option value="fortune">Fortune's Algorithm (O(n log n))</option>
+                                <option value="delaunay">Via Triangulação Delaunay</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="stats-panel">
+                        <h3>📊 Estatísticas</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Pontos:</span>
+                                <span id="totalPoints" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Células:</span>
+                                <span id="totalCells" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Vértices:</span>
+                                <span id="totalVertices" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Arestas:</span>
+                                <span id="totalEdges" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Tempo cálculo:</span>
+                                <span id="calcTime" class="stat-value">0ms</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Status:</span>
+                                <span id="status" class="stat-value">Pronto</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="legend">
+                        <h3>🎨 Legenda</h3>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #4361ee;"></div>
+                                <span>Sítios (pontos)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #4ade80;"></div>
+                                <span>Células de Voronoi</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #f72585;"></div>
+                                <span>Arestas</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #ff9100;"></div>
+                                <span>Triângulos Delaunay</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background: #4cc9f0;"></div>
+                                <span>Circuncentros</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="navigation">
+                        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                            <span class="btn-icon">←</span> Voltar para Graham Scan
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Diagramas de Voronoi - Visualização interativa | Criado para fins educacionais</p>
+            <p>Algoritmo: Fortune's Algorithm (O(n log n)) | Implementação em JavaScript</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/voronoi.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/voronoi-viz.js') }}"></script>
+</body>
+</html>

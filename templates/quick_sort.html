@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Sort - Visualização</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/quick_sort.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-bolt"></i> Quick Sort - Visualização</h1>
+            <p class="subtitle">Visualize como o algoritmo Quick Sort funciona usando o paradigma "Dividir para Conquistar" com pivôs</p>
+        </header>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="arraySize">Tamanho do Array:</label>
+                    <input type="range" id="arraySize" min="8" max="32" value="16">
+                    <span id="sizeValue">16</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speed">Velocidade:</label>
+                    <input type="range" id="speed" min="1" max="40" value="15">
+                    <span id="speedValue">Médio</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="pivotStrategy">Estratégia do Pivô:</label>
+                    <select id="pivotStrategy">
+                        <option value="first">Primeiro Elemento</option>
+                        <option value="last">Último Elemento</option>
+                        <option value="middle" selected>Elemento do Meio</option>
+                        <option value="random">Aleatório</option>
+                    </select>
+                </div>
+                
+                <div class="buttons">
+                    <button id="generateBtn" class="btn">
+                        <i class="fas fa-random"></i> Novo Array
+                    </button>
+                    <button id="startBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Iniciar
+                    </button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3><i class="fas fa-info-circle"></i> Como o Quick Sort Funciona</h3>
+                    <p>O Quick Sort é um algoritmo de ordenação eficiente que usa a técnica "Dividir para Conquistar".</p>
+                    <p><strong>Passos:</strong></p>
+                    <ol>
+                        <li><strong>Escolher um pivô</strong> do array</li>
+                        <li><strong>Particionar</strong>: Reorganizar o array de forma que:
+                            <ul>
+                                <li>Elementos menores que o pivô vão para a esquerda</li>
+                                <li>Elementos maiores que o pivô vão para a direita</li>
+                            </ul>
+                        </li>
+                        <li><strong>Recursão</strong>: Aplicar Quick Sort recursivamente nas duas partições</li>
+                    </ol>
+                    <p><strong>Complexidade Temporal:</strong></p>
+                    <ul>
+                        <li>Melhor caso: O(n log n)</li>
+                        <li>Caso médio: O(n log n)</li>
+                        <li>Pior caso: O(n²) - quando o pivô é sempre o menor ou maior elemento</li>
+                    </ul>
+                    <p><strong>Complexidade Espacial:</strong> O(log n) para a pilha de recursão</p>
+                    <p><strong>Estável:</strong> Não</p>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <div class="main-array-container">
+                    <h3><i class="fas fa-list-ol"></i> Array Principal</h3>
+                    <div class="array-container" id="mainArray"></div>
+                </div>
+                
+                <div class="partition-visualization">
+                    <div class="current-partition">
+                        <h4><i class="fas fa-project-diagram"></i> Partição Atual</h4>
+                        <div class="partition-info" id="partitionInfo">
+                            <p>Aguardando início...</p>
+                        </div>
+                        <div class="pivot-display">
+                            <div class="pivot-label">Pivô Atual:</div>
+                            <div class="pivot-value" id="currentPivot">-</div>
+                            <div class="pivot-index" id="pivotIndex">Índice: -</div>
+                        </div>
+                    </div>
+                    
+                    <div class="pointer-display">
+                        <div class="pointer left-pointer">
+                            <i class="fas fa-arrow-left"></i>
+                            <div class="pointer-label">Esquerda (i)</div>
+                            <div class="pointer-value" id="leftPointer">0</div>
+                        </div>
+                        <div class="pointer right-pointer">
+                            <i class="fas fa-arrow-right"></i>
+                            <div class="pointer-label">Direita (j)</div>
+                            <div class="pointer-value" id="rightPointer">0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status">
+                    <div class="status-item">
+                        <span class="status-label">Comparações:</span>
+                        <span id="comparisonCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Trocas:</span>
+                        <span id="swapCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Partições:</span>
+                        <span id="partitionCount" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Recursão:</span>
+                        <span id="recursionDepth" class="status-value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span id="statusText" class="status-value">Pronto</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box unsorted"></div>
+                        <span>Não Ordenado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box pivot"></div>
+                        <span>Pivô</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box comparing"></div>
+                        <span>Comparando</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box swapping"></div>
+                        <span>Trocando</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box left-partition"></div>
+                        <span>Partição Esquerda</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box right-partition"></div>
+                        <span>Partição Direita</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box sorted"></div>
+                        <span>Ordenado</span>
+                    </div>
+                </div>
+                
+                <div class="call-stack">
+                    <h4><i class="fas fa-layer-group"></i> Pilha de Chamadas Recursivas</h4>
+                    <div class="stack-container" id="callStack">
+                        <div class="stack-empty">
+                            <i class="fas fa-code-branch"></i>
+                            <p>Aguardando chamadas recursivas...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/quick_sort.js') }}"></script>
+</body>
+</html>

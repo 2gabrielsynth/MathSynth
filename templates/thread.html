@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualização de Concorrência</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/thread.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <h1><i class="fas fa-microchip"></i> Visualização de Concorrência</h1>
+                <p class="subtitle">Problemas clássicos de concorrência: Race Conditions, Deadlocks e Sincronização</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Painel de Controles -->
+            <aside class="controls-panel">
+                <!-- Seleção de Cenário -->
+                <section class="control-section">
+                    <h2><i class="fas fa-play-circle"></i> Cenário de Concorrência</h2>
+                    <div class="scenario-selector">
+                        <div class="scenario-option active" data-scenario="race_condition">
+                            <div class="scenario-icon">
+                                <i class="fas fa-running"></i>
+                            </div>
+                            <div class="scenario-info">
+                                <h3>Race Condition</h3>
+                                <p>Acesso concorrente a variável compartilhada</p>
+                            </div>
+                        </div>
+                        
+                        <div class="scenario-option" data-scenario="deadlock">
+                            <div class="scenario-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="scenario-info">
+                                <h3>Deadlock</h3>
+                                <p>Espera circular por recursos</p>
+                            </div>
+                        </div>
+                        
+                        <div class="scenario-option" data-scenario="producer_consumer">
+                            <div class="scenario-icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="scenario-info">
+                                <h3>Produtor-Consumidor</h3>
+                                <p>Sincronização com buffer compartilhado</p>
+                            </div>
+                        </div>
+                        
+                        <div class="scenario-option" data-scenario="reader_writer">
+                            <div class="scenario-icon">
+                                <i class="fas fa-book-reader"></i>
+                            </div>
+                            <div class="scenario-info">
+                                <h3>Leitores-Escritores</h3>
+                                <p>Múltiplos leitores vs escritor único</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Configurações do Cenário -->
+                <section class="config-section">
+                    <h2><i class="fas fa-sliders-h"></i> Configurações</h2>
+                    
+                    <div class="config-group">
+                        <label for="threadCount">Número de Threads:</label>
+                        <div class="slider-group">
+                            <input type="range" id="threadCount" min="2" max="8" value="4">
+                            <span id="threadCountValue" class="value-display">4</span>
+                        </div>
+                    </div>
+                    
+                    <div class="config-group">
+                        <label for="executionSpeed">Velocidade de Execução:</label>
+                        <div class="slider-group">
+                            <input type="range" id="executionSpeed" min="50" max="1000" value="300">
+                            <span id="executionSpeedValue" class="value-display">Normal</span>
+                        </div>
+                    </div>
+                    
+                    <div class="config-group">
+                        <label for="synchronization">Sincronização:</label>
+                        <select id="synchronization">
+                            <option value="none">Sem Sincronização</option>
+                            <option value="mutex">Mutex (Exclusão Mútua)</option>
+                            <option value="semaphore">Semáforo</option>
+                            <option value="monitor">Monitor</option>
+                            <option value="atomic">Operações Atômicas</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-group">
+                        <label for="iterations">Iterações por Thread:</label>
+                        <div class="slider-group">
+                            <input type="range" id="iterations" min="5" max="50" value="20">
+                            <span id="iterationsValue" class="value-display">20</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Botões de Controle -->
+                <section class="buttons-section">
+                    <div class="buttons-grid">
+                        <button id="startBtn" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Iniciar Simulação
+                        </button>
+                        <button id="pauseBtn" class="btn btn-secondary" disabled>
+                            <i class="fas fa-pause"></i> Pausar
+                        </button>
+                        <button id="stepBtn" class="btn btn-secondary">
+                            <i class="fas fa-forward"></i> Passo
+                        </button>
+                        <button id="resetBtn" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i> Reiniciar
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Estatísticas -->
+                <section class="stats-section">
+                    <h2><i class="fas fa-chart-bar"></i> Estatísticas</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Threads Ativas:</span>
+                            <span id="activeThreads" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Operações:</span>
+                            <span id="totalOperations" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Race Conditions:</span>
+                            <span id="raceConditions" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Deadlocks:</span>
+                            <span id="deadlocks" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Tempo:</span>
+                            <span id="executionTime" class="stat-value">0s</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Status:</span>
+                            <span id="status" class="status-badge status-ready">Pronto</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Explicação do Cenário -->
+                <section class="explanation-section">
+                    <h2><i class="fas fa-info-circle"></i> Explicação</h2>
+                    <div class="explanation-content">
+                        <h3 id="scenarioTitle">Race Condition</h3>
+                        <p id="scenarioDescription">
+                            Múltiplas threads acessando e modificando uma variável compartilhada
+                            sem sincronização adequada, resultando em valores incorretos.
+                        </p>
+                        <div class="code-snippet">
+                            <pre id="scenarioCode">shared_counter = 0
+
+def thread_function():
+    global shared_counter
+    for i in range(1000):
+        temp = shared_counter
+        temp += 1
+        shared_counter = temp</pre>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- Área de Visualização -->
+            <div class="visualization-area">
+                <!-- Visualização Principal -->
+                <section class="main-visualization">
+                    <div class="section-header">
+                        <h2><i class="fas fa-project-diagram"></i> Visualização da Concorrência</h2>
+                        <div class="visualization-controls">
+                            <button id="zoomIn" class="icon-btn" title="Zoom In">
+                                <i class="fas fa-search-plus"></i>
+                            </button>
+                            <button id="zoomOut" class="icon-btn" title="Zoom Out">
+                                <i class="fas fa-search-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="visualization-container">
+                        <!-- Estado das Threads -->
+                        <div class="threads-panel">
+                            <h3><i class="fas fa-users"></i> Threads</h3>
+                            <div class="threads-container" id="threadsContainer">
+                                <!-- Threads serão geradas aqui -->
+                            </div>
+                        </div>
+                        
+                        <!-- Recursos Compartilhados -->
+                        <div class="resources-panel">
+                            <h3><i class="fas fa-cogs"></i> Recursos Compartilhados</h3>
+                            <div class="resources-container" id="resourcesContainer">
+                                <!-- Recursos serão gerados aqui -->
+                            </div>
+                        </div>
+                        
+                        <!-- Linha do Tempo -->
+                        <div class="timeline-panel">
+                            <h3><i class="fas fa-history"></i> Linha do Tempo</h3>
+                            <div class="timeline-container" id="timelineContainer">
+                                <!-- Eventos de concorrência serão mostrados aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Painéis Inferiores -->
+                <div class="bottom-panels">
+                    <!-- Estado do Sistema -->
+                    <section class="system-state-panel">
+                        <h2><i class="fas fa-server"></i> Estado do Sistema</h2>
+                        <div class="state-grid">
+                            <div class="state-item">
+                                <span class="state-label">Variável Compartilhada:</span>
+                                <span id="sharedVariable" class="state-value">0</span>
+                            </div>
+                            <div class="state-item">
+                                <span class="state-label">Buffer (Produtor-Consumidor):</span>
+                                <span id="bufferState" class="state-value">Vazio</span>
+                            </div>
+                            <div class="state-item">
+                                <span class="state-label">Mutex Estado:</span>
+                                <span id="mutexState" class="state-value">Desbloqueado</span>
+                            </div>
+                            <div class="state-item">
+                                <span class="state-label">Semáforo Count:</span>
+                                <span id="semaphoreCount" class="state-value">1</span>
+                            </div>
+                            <div class="state-item">
+                                <span class="state-label">Leitores Ativos:</span>
+                                <span id="activeReaders" class="state-value">0</span>
+                            </div>
+                            <div class="state-item">
+                                <span class="state-label">Escritor Ativo:</span>
+                                <span id="activeWriter" class="state-value">Não</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Log de Eventos -->
+                    <section class="events-panel">
+                        <h2><i class="fas fa-list"></i> Log de Eventos</h2>
+                        <div class="events-container" id="eventsContainer">
+                            <div class="event-entry info">
+                                <span class="event-time">00:00:00</span>
+                                <span class="event-message">Sistema inicializado. Selecione um cenário e clique em Iniciar.</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <!-- Problemas Detectados -->
+        <div class="problems-panel">
+            <h2><i class="fas fa-exclamation-triangle"></i> Problemas Detectados</h2>
+            <div class="problems-container" id="problemsContainer">
+                <div class="problem-item">
+                    <div class="problem-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="problem-content">
+                        <p>Nenhum problema detectado ainda. Execute a simulação para ver problemas de concorrência.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/thread.js') }}"></script>
+</body>
+</html>
